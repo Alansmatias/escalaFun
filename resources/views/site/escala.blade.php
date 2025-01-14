@@ -25,23 +25,24 @@
 
         <!-- Corpo da tabela -->
         <tbody>
-        @foreach($escalas as $escala)
+        @foreach($escalas as $key => $escalasGrupo)
         <tr>
             <!-- Nome do Funcionário -->
-            <td>{{ $escala->funcionario->nome }}</td>
+            <td>{{ $escalasGrupo->first()->funcionario->nome }}</td>
 
             <!-- Nome do Setor -->
-            <td>{{ $escala->setor->nome }}</td>
+            <td>{{ $escalasGrupo->first()->setor->nome }}</td>
 
             <!-- Nome do Turno -->
-            <td>{{ $escala->turno->nome }}</td>
+            <td>{{ $escalasGrupo->first()->turno->nome }}</td>
 
             <!-- Status por Dia -->
             @if($escalaHeaders)
                 @foreach($escalaHeaders as $header)
                     <td>
                         @php
-                            $status = $escala->dia === $header['day'] ? $escala->status : '#';
+                            $escala = $escalasGrupo->firstWhere('dia', $header['day']);
+                            $status = $escala ? $escala->status : '#';
                             $buttonClass = 'btn-secondary'; // Classe padrão
 
                             if ($status === 'E') {
@@ -55,7 +56,7 @@
                         <button type="button" class="btn {{ $buttonClass }} statusButton" data-status="{{ $status }}" onclick="toggleStatus(this)">
                             {{ $status }}
                         </button>
-                        <input type="hidden" name="status[{{ $escala->id }}][{{ $header['day'] }}]" value="{{ $status }}">
+                        <input type="hidden" name="status[{{ $key }}][{{ $header['day'] }}]" value="{{ $status }}">
                     </td>
                 @endforeach
             @else
@@ -64,7 +65,7 @@
 
             <!-- Coluna de Ações -->
             <td>
-                <button class="btn btn-danger" type="button" onclick="confirmarRemocao('{{ route('escalar.remover', $escala->id) }}')">Remover</button>
+                <button class="btn btn-danger" type="button" onclick="confirmarRemocao('{{ route('escalar.remover', $escalasGrupo->first()->id) }}')">Remover</button>
             </td>
         </tr>
         @endforeach

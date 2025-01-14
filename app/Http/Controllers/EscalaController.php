@@ -135,10 +135,7 @@ class EscalaController extends Controller
      */
     public function listaEscala()
     {
-        // Definir o ID do período manualmente
         $periodoId = 1; // Altere este valor conforme necessário
-    
-        // Buscar o período específico pelo ID
         $periodo = Periodo::find($periodoId);
     
         $escalaHeaders = [];
@@ -156,7 +153,6 @@ class EscalaController extends Controller
             }
         }
     
-        // Caso nenhum período seja encontrado ou não existam datas
         if (empty($escalaHeaders)) {
             $escalaHeaders = null; // Nenhum período definido
         }
@@ -164,9 +160,11 @@ class EscalaController extends Controller
         // Carregar escalas e incluir relações com setor, turno e funcionário
         $escalas = Escala::with(['setor', 'turno', 'funcionario'])
             ->where('id_periodo', $periodoId)
-            ->get();
+            ->get()
+            ->groupBy(function ($item) {
+                return $item->id_funcionario . '-' . $item->id_setor . '-' . $item->id_turno;
+            });
     
-        // Passar os dados para a view
         return view('site.escala', compact('escalaHeaders', 'escalas'));
     }
     
