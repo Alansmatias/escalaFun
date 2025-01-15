@@ -98,6 +98,8 @@ class EscalaController extends Controller
     
         $dataInicio = Carbon::parse($periodo->dataIni);
     
+        $erros = []; // Array para armazenar mensagens de erro
+    
         // Processar os dados do formulário
         foreach ($validatedData['funcionario'] as $index => $funcionarioId) {
             $setorId = $validatedData['setor'][$index];
@@ -105,13 +107,27 @@ class EscalaController extends Controller
     
             foreach ($validatedData['status'][$index] as $day => $status) {
                 // Verifica se o status é '#' e pula a inserção
-                if ($status === '#'){
-                    continue; //pula
+                if ($status === '#') {
+                    continue; // Pula
                 }
-
+    
                 // Converter o dia para uma data no formato correto
                 $date = $dataInicio->copy()->addDays($day - 1)->format('Y-m-d');
     
+                // Verificar se já existe uma escala para este funcionário no mesmo dia
+                $existeEscala = DB::table('escalas')
+                    ->where('id_funcionario', $funcionarioId)
+                    ->where('dia', $date)
+                    ->where('id_periodo', $periodoId)
+                    ->exists();
+    
+                if ($existeEscala) {
+                    // Adicionar mensagem de erro ao array
+                    $erros[] = "Funcionário ID {$funcionarioId} já escalado para o dia {$date}.";
+                    continue;
+                }
+    
+                // Inserir ou atualizar a escala
                 DB::table('escalas')->updateOrInsert(
                     [
                         'id_funcionario' => $funcionarioId,
@@ -125,6 +141,11 @@ class EscalaController extends Controller
                     ]
                 );
             }
+        }
+    
+        // Verificar se houve erros
+        if (!empty($erros)) {
+            return redirect()->back()->withErrors(['error' => $erros]);
         }
     
         return redirect()->route('escalarfun')->with('success', 'Escala salva com sucesso!');
