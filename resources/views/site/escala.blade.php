@@ -79,7 +79,7 @@
 
 <script>
     function toggleStatus(button) {
-        const statuses = ["E", "D", "F"];
+        const statuses = ["E", "D", "F", "#"];
         const classes = {
             "E": "btn-success",
             "D": "btn-warning",
