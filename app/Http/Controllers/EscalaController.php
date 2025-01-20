@@ -209,10 +209,74 @@ class EscalaController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, Escala $escala)
+    public function update(Request $request)
     {
-        //
-    }
+        // Validar os dados recebidos
+        $validatedData = $request->validate([
+            'funcionario.*' => 'required|exists:funcionarios,id',
+            'setor.*' => 'required|exists:setors,id',
+            'turno.*' => 'required|exists:turnos,id',
+            'status.*.*' => 'required|in:E,D,F,#',
+        ]);
+    
+        // Obter o ID do período (fixo ou enviado pelo formulário)
+        $periodoId = 1; // Ajuste conforme necessário
+    
+        // Obter o período correspondente para cálculo das datas
+        $periodo = DB::table('periodos')->where('id', $periodoId)->first();
+        if (!$periodo) {
+            return redirect()->back()->withErrors(['error' => 'Período não encontrado.']);
+        }
+    
+        $dataInicio = Carbon::parse($periodo->dataIni);
+    
+        $erros = []; // Array para armazenar mensagens de erro
+    
+        // Processar os dados do formulário
+        foreach ($validatedData['funcionario'] as $index => $funcionarioId) {
+            $setorId = $validatedData['setor'][$index];
+            $turnoId = $validatedData['turno'][$index];
+    
+            foreach ($validatedData['status'][$index] as $day => $status) {
+                // Verifica se o status é '#' e pula a atualização
+                if ($status === '#') {
+                    continue; // Pula
+                }
+    
+                // Certifique-se que day seja um número
+                $day = intval($day);  // Cast para inteiro
+                $date = $dataInicio->copy()->addDays($day - 1)->format('Y-m-d');
+    
+                // Atualizar a escala existente ou mostrar erro se não existir
+                $escala = DB::table('escalas')
+                    ->where('id_funcionario', $funcionarioId)
+                    ->where('dia', $date)
+                    ->where('id_periodo', $periodoId)
+                    ->first();
+    
+                if ($escala) {
+                    // Atualizar o registro existente
+                    DB::table('escalas')
+                        ->where('id', $escala->id)
+                        ->update([
+                            'id_setor' => $setorId,
+                            'id_turno' => $turnoId,
+                            'status' => $status,
+                        ]);
+                } else {
+                    // Se não existir, adicionar erro
+                    $erros[] = "Nenhuma escala existente para o funcionário ID {$funcionarioId} no dia {$date}.";
+                }
+            }
+        }
+    
+        // Verificar se houve erros
+        if (!empty($erros)) {
+            return redirect()->back()->withErrors(['error' => $erros]);
+        }
+    
+        return redirect()->route('escalarfun')->with('success', 'Escala atualizada com sucesso!');
+    }    
 
     /**
      * Remove the specified resource from storage.

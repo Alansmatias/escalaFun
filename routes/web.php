@@ -31,7 +31,7 @@ Route::get('/', function () {
 Route::get('/escala', [EscalaController::class, 'listaEscala'])->name('escala'); //Página principal da Rota
 Route::get('/escalarFuncionario', [EscalaController::class, 'escalar'])->name('escalarfun'); //Página principal da Rota
 Route::post('/escalar/salvar', [EscalaController::class, 'store'])->name('escalar.salvar'); //Salvar registro na tabela do banco
-Route::post('/escalar/atualizar', [EscalaController::class, 'atualizar'])->name('escalar.atualizar');
+Route::post('/escalar/atualizar', [EscalaController::class, 'update'])->name('escalar.atualizar');
 Route::post('#', [EscalaController::class, '#'])->name('escalar.remover');
 
 

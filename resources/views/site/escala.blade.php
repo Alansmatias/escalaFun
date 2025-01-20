@@ -28,13 +28,22 @@
         @foreach($escalas as $key => $escalasGrupo)
         <tr>
             <!-- Nome do Funcionário -->
-            <td>{{ $escalasGrupo->first()->funcionario->nome }}</td>
+            <td>
+                {{ $escalasGrupo->first()->funcionario->nome }}
+                <input type="hidden" name="funcionario[{{ $key }}]" value="{{ $escalasGrupo->first()->funcionario->id }}">
+            </td>
 
             <!-- Nome do Setor -->
-            <td>{{ $escalasGrupo->first()->setor->nome }}</td>
+            <td>
+                {{ $escalasGrupo->first()->setor->nome }}
+                <input type="hidden" name="setor[{{ $key }}]" value="{{ $escalasGrupo->first()->setor->id }}">
+            </td>
 
             <!-- Nome do Turno -->
-            <td>{{ $escalasGrupo->first()->turno->nome }}</td>
+            <td>
+                {{ $escalasGrupo->first()->turno->nome }}
+                <input type="hidden" name="turno[{{ $key }}]" value="{{ $escalasGrupo->first()->turno->id }}">
+            </td>
 
             <!-- Status por Dia -->
             @if($escalaHeaders)
