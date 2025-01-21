@@ -231,29 +231,39 @@ class EscalaController extends Controller
         $dataInicio = Carbon::parse($periodo->dataIni);
     
         $erros = []; // Array para armazenar mensagens de erro
-    
+
         // Processar os dados do formulário
         foreach ($validatedData['funcionario'] as $index => $funcionarioId) {
             $setorId = $validatedData['setor'][$index];
             $turnoId = $validatedData['turno'][$index];
     
+            $excluirIds = [];
+
             foreach ($validatedData['status'][$index] as $day => $status) {
-                // Verifica se o status é '#' e pula a atualização
+                // Y-m-d
+                $date = $day;
+            
+                // Verifica se o status é '#' e adiciona à lista de exclusão
                 if ($status === '#') {
-                    continue; // Pula
+                    $escala = DB::table('escalas')
+                        ->where('id_funcionario', $funcionarioId)
+                        ->where('dia', $date)
+                        ->where('id_periodo', $periodoId)
+                        ->first();
+            
+                    if ($escala) {
+                        $excluirIds[] = $escala->id;
+                    }
+                    continue; // Pula para o próximo dia
                 }
-    
-                // Certifique-se que day seja um número
-                $day = intval($day);  // Cast para inteiro
-                $date = $dataInicio->copy()->addDays($day - 1)->format('Y-m-d');
-    
-                // Atualizar a escala existente ou mostrar erro se não existir
+            
+                // Busca o registro existente
                 $escala = DB::table('escalas')
                     ->where('id_funcionario', $funcionarioId)
                     ->where('dia', $date)
                     ->where('id_periodo', $periodoId)
                     ->first();
-    
+            
                 if ($escala) {
                     // Atualizar o registro existente
                     DB::table('escalas')
@@ -264,10 +274,24 @@ class EscalaController extends Controller
                             'status' => $status,
                         ]);
                 } else {
-                    // Se não existir, adicionar erro
-                    $erros[] = "Nenhuma escala existente para o funcionário ID {$funcionarioId} no dia {$date}.";
+                    // Se o status não for '#', cria um novo registro
+                    DB::table('escalas')->insert([
+                        'id_funcionario' => $funcionarioId,
+                        'dia' => $date,
+                        'id_periodo' => $periodoId,
+                        'id_setor' => $setorId,
+                        'id_turno' => $turnoId,
+                        'status' => $status,
+                    ]);
                 }
             }
+            
+            // Excluir os registros no final
+            if (!empty($excluirIds)) {
+                DB::table('escalas')
+                    ->whereIn('id', $excluirIds)
+                    ->delete();
+            }                      
         }
     
         // Verificar se houve erros
@@ -275,7 +299,7 @@ class EscalaController extends Controller
             return redirect()->back()->withErrors(['error' => $erros]);
         }
     
-        return redirect()->route('escalarfun')->with('success', 'Escala atualizada com sucesso!');
+        return redirect()->route('escala')->with('success', 'Escala atualizada com sucesso!');
     }    
 
     /**
