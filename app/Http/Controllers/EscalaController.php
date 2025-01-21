@@ -249,6 +249,8 @@ class EscalaController extends Controller
                         ->where('id_funcionario', $funcionarioId)
                         ->where('dia', $date)
                         ->where('id_periodo', $periodoId)
+                        ->where('id_setor', $setorId)
+                        ->where('id_turno', $turnoId)
                         ->first();
             
                     if ($escala) {
