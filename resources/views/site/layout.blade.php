@@ -83,6 +83,15 @@
       .bd-mode-toggle .dropdown-menu .active .bi {
         display: block !important;
       }
+
+      @media screen and (max-width: 768px) {
+        .menuesconde {
+          display: none !important;
+        }
+        .menumostra {
+          display: block !important;
+        }
+      }
     </style>
 </head>
 <body class="overflow-hidden">
@@ -108,12 +117,14 @@
   <symbol id="grid" viewBox="0 0 16 16">
     <path d="M1 2.5A1.5 1.5 0 0 1 2.5 1h3A1.5 1.5 0 0 1 7 2.5v3A1.5 1.5 0 0 1 5.5 7h-3A1.5 1.5 0 0 1 1 5.5v-3zM2.5 2a.5.5 0 0 0-.5.5v3a.5.5 0 0 0 .5.5h3a.5.5 0 0 0 .5-.5v-3a.5.5 0 0 0-.5-.5h-3zm6.5.5A1.5 1.5 0 0 1 10.5 1h3A1.5 1.5 0 0 1 15 2.5v3A1.5 1.5 0 0 1 13.5 7h-3A1.5 1.5 0 0 1 9 5.5v-3zm1.5-.5a.5.5 0 0 0-.5.5v3a.5.5 0 0 0 .5.5h3a.5.5 0 0 0 .5-.5v-3a.5.5 0 0 0-.5-.5h-3zM1 10.5A1.5 1.5 0 0 1 2.5 9h3A1.5 1.5 0 0 1 7 10.5v3A1.5 1.5 0 0 1 5.5 15h-3A1.5 1.5 0 0 1 1 13.5v-3zm1.5-.5a.5.5 0 0 0-.5.5v3a.5.5 0 0 0 .5.5h3a.5.5 0 0 0 .5-.5v-3a.5.5 0 0 0-.5-.5h-3zm6.5.5A1.5 1.5 0 0 1 10.5 9h3a1.5 1.5 0 0 1 1.5 1.5v3a1.5 1.5 0 0 1-1.5 1.5h-3A1.5 1.5 0 0 1 9 13.5v-3zm1.5-.5a.5.5 0 0 0-.5.5v3a.5.5 0 0 0 .5.5h3a.5.5 0 0 0 .5-.5v-3a.5.5 0 0 0-.5-.5h-3z"/>
   </symbol>
+  <symbol id="bi-list" viewBox="0 0 16 16">
+    <path fill-rule="evenodd" d="M2.5 12a.5.5 0 0 1 .5-.5h10a.5.5 0 0 1 0 1H3a.5.5 0 0 1-.5-.5m0-4a.5.5 0 0 1 .5-.5h10a.5.5 0 0 1 0 1H3a.5.5 0 0 1-.5-.5m0-4a.5.5 0 0 1 .5-.5h10a.5.5 0 0 1 0 1H3a.5.5 0 0 1-.5-.5"/>
+  </symbol>
 </svg>
 
 <main class="d-flex flex-nowrap">
   <h1 class="visually-hidden">Sidebars examples</h1>
-
-  <div class="d-flex flex-column flex-shrink-0 p-3 text-bg-dark vh-100" style="width: 280px;">
+  <div class="d-flex flex-column flex-shrink-0 p-3 text-bg-dark vh-100 menuesconde" style="width: 280px;" id="menu-principal">
     <a href="#" class="d-flex align-items-center mb-3 mb-md-0 me-md-auto text-white text-decoration-none">
       <svg class="bi pe-none me-2" width="40" height="32"><use xlink:href="#bootstrap"/></svg>
       <span class="fs-4">Escala Pão da Vida</span>
@@ -210,8 +221,8 @@
       </ul>
     </div>
   </div>
-
     <div class="container vh-100 overflow-auto">
+    <div class="menumostra d-none"><a id="botao-menu" class="btn btn-dark" href="#" role="button"><svg class="bi pe-none me-2" width="30" height="30"><use xlink:href="#bi-list"/></svg></a></div>
     @yield('conteudo')
     </div>
 
@@ -221,5 +232,14 @@
 
 <!-- Bootstrap JS -->
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
+
+<script>
+  document.getElementById("botao-menu").addEventListener("click", function (event) {
+  event.preventDefault(); // Evita o comportamento padrão do link
+  const menu = document.getElementById("menu-principal");
+  menu.classList.toggle("menuesconde"); // Remove a classe que esconde o menu
+});
+</script>
+
 </body>
 </html>

@@ -43,6 +43,8 @@ class EscalaController extends Controller
 
         $escalaHeaders = [];
 
+        Carbon::setLocale('pt_BR'); // Define a linguagem para português
+
         if ($periodo) {
             $dataInicio = Carbon::parse($periodo->dataIni);
             $dataFim = Carbon::parse($periodo->dataFim);
@@ -50,7 +52,7 @@ class EscalaController extends Controller
             for ($data = $dataInicio; $data->lte($dataFim); $data->addDay()) {
                 $escalaHeaders[] = [
                     'day' => $data->day,
-                    'dayName' => $data->format('D'),
+                    'dayName' => $data->translatedFormat('D'),
                 ];
             }
         }
@@ -152,32 +154,34 @@ class EscalaController extends Controller
     }
 
     /**
-     * Pagina que vai listas todos permitindo edição!!!!!!!!!!!!!
+     * Página que vai listar todos permitindo edição.
      */
     public function listaEscala()
     {
         $periodoId = 1; // Altere este valor conforme necessário
         $periodo = Periodo::find($periodoId);
-    
+
         $escalaHeaders = [];
-    
+
+        Carbon::setLocale('pt_BR'); // Define a linguagem para português
+
         if ($periodo) {
             $dataInicio = Carbon::parse($periodo->dataIni);
             $dataFim = Carbon::parse($periodo->dataFim);
-    
+
             for ($data = $dataInicio; $data->lte($dataFim); $data->addDay()) {
                 $escalaHeaders[] = [
                     'day' => $data->format('Y-m-d'), // Data completa como chave
-                    'dayName' => $data->format('D'), // dia da semana ex: seg, ter...
-                    'diaDoMes' => $data->day, // Dia do mes
+                    'dayName' => $data->translatedFormat('D'), // dia da semana traduzido
+                    'diaDoMes' => $data->day, // Dia do mês
                 ];
             }
         }
-    
+
         if (empty($escalaHeaders)) {
             $escalaHeaders = null; // Nenhum período definido
         }
-    
+
         // Carregar escalas e incluir relações com setor, turno e funcionário
         $escalas = Escala::with(['setor', 'turno', 'funcionario'])
             ->where('id_periodo', $periodoId)
@@ -185,7 +189,7 @@ class EscalaController extends Controller
             ->groupBy(function ($item) {
                 return $item->id_funcionario . '-' . $item->id_setor . '-' . $item->id_turno;
             });
-    
+
         return view('site.escala', compact('escalaHeaders', 'escalas'));
     }
     
@@ -211,6 +215,8 @@ class EscalaController extends Controller
      */
     public function update(Request $request)
     {
+        $idiomas = Carbon::getAvailableLocales();
+        dd($idiomas);
         // Validar os dados recebidos
         $validatedData = $request->validate([
             'funcionario.*' => 'required|exists:funcionarios,id',
