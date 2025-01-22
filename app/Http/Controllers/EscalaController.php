@@ -216,7 +216,7 @@ class EscalaController extends Controller
     public function update(Request $request)
     {
         $idiomas = Carbon::getAvailableLocales();
-        dd($idiomas);
+
         // Validar os dados recebidos
         $validatedData = $request->validate([
             'funcionario.*' => 'required|exists:funcionarios,id',
@@ -242,13 +242,13 @@ class EscalaController extends Controller
         foreach ($validatedData['funcionario'] as $index => $funcionarioId) {
             $setorId = $validatedData['setor'][$index];
             $turnoId = $validatedData['turno'][$index];
-    
+
             $excluirIds = [];
 
             foreach ($validatedData['status'][$index] as $day => $status) {
                 // Y-m-d
                 $date = $day;
-            
+
                 // Verifica se o status é '#' e adiciona à lista de exclusão
                 if ($status === '#') {
                     $escala = DB::table('escalas')
@@ -258,20 +258,20 @@ class EscalaController extends Controller
                         ->where('id_setor', $setorId)
                         ->where('id_turno', $turnoId)
                         ->first();
-            
+
                     if ($escala) {
                         $excluirIds[] = $escala->id;
                     }
                     continue; // Pula para o próximo dia
                 }
-            
+
                 // Busca o registro existente
                 $escala = DB::table('escalas')
                     ->where('id_funcionario', $funcionarioId)
                     ->where('dia', $date)
                     ->where('id_periodo', $periodoId)
                     ->first();
-            
+
                 if ($escala) {
                     // Atualizar o registro existente
                     DB::table('escalas')
@@ -293,13 +293,13 @@ class EscalaController extends Controller
                     ]);
                 }
             }
-            
+
             // Excluir os registros no final
             if (!empty($excluirIds)) {
                 DB::table('escalas')
                     ->whereIn('id', $excluirIds)
                     ->delete();
-            }                      
+            }
         }
     
         // Verificar se houve erros
