@@ -82,11 +82,6 @@
             @else
                 <td colspan="31">Nenhum período definido</td>
             @endif
-
-            <!-- Coluna de Ações -->
-            <td>
-                <button class="btn btn-danger" type="button" onclick="confirmarRemocao('{{ route('escalar.remover', $escalasGrupo->first()->id) }}')">Remover</button>
-            </td>
         </tr>
         @endforeach
         </tbody>
@@ -117,12 +112,6 @@
 
         // Atualizar a classe do botão
         button.className = `btn ${classes[nextStatus]} statusButton btn-e`;
-    }
-
-    function confirmarRemocao(url) {
-        if (confirm('Tem certeza que deseja remover este funcionário da escala?')) {
-            window.location.href = url;
-        }
     }
 </script>
 @endsection
