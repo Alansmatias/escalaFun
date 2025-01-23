@@ -233,9 +233,7 @@ class EscalaController extends Controller
         if (!$periodo) {
             return redirect()->back()->withErrors(['error' => 'Período não encontrado.']);
         }
-    
-        $dataInicio = Carbon::parse($periodo->dataIni);
-    
+
         $erros = []; // Array para armazenar mensagens de erro
 
         // Processar os dados do formulário
@@ -245,11 +243,10 @@ class EscalaController extends Controller
 
             $excluirIds = [];
 
-            foreach ($validatedData['status'][$index] as $day => $status) {
-                // Y-m-d
-                $date = $day;
+            foreach ($validatedData['status'][$index] as $date => $status) {
+                // $date ja está em formato Y-m-d(carbon)
 
-                // Verifica se o status é '#' e adiciona à lista de exclusão
+                // Verifica se o status é '#' Pula pro Proximo
                 if ($status === '#') {
                     $escala = DB::table('escalas')
                         ->where('id_funcionario', $funcionarioId)
