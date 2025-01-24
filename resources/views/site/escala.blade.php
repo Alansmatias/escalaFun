@@ -55,7 +55,7 @@
                 {{ $escalasGrupo->first()->turno->nome }}
                 <input type="hidden" name="turno[{{ $key }}]" value="{{ $escalasGrupo->first()->turno->id }}">
             </td>
-
+            @dd($diasEscalados);
             <!-- Status por Dia -->
             @if($escalaHeaders)
                 @foreach($escalaHeaders as $header)
