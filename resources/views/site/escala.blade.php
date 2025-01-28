@@ -55,11 +55,10 @@
                 {{ $escalasGrupo->first()->turno->nome }}
                 <input type="hidden" name="turno[{{ $key }}]" value="{{ $escalasGrupo->first()->turno->id }}">
             </td>
-
             <!-- Status por Dia -->
             @if($escalaHeaders)
                 @foreach($escalaHeaders as $header)
-                    <td>
+                    <td data-dia="{{ $header['day'] }}">
                         @php
                             $escala = $escalasGrupo->firstWhere('dia', $header['day']);
                             $status = $escala ? $escala->status : '#';
@@ -106,12 +105,30 @@
         let nextIndex = (statuses.indexOf(currentStatus) + 1) % statuses.length;
         let nextStatus = statuses[nextIndex];
 
+        // Verifica se o próximo status é "#" e se o funcionário já está escalado no mesmo dia
+        if (nextStatus === "#") {
+            const dia = button.closest('td').getAttribute('data-dia'); // Obtém o dia da célula
+            const funcionarioId = button.closest('tr').querySelector('input[name^="funcionario"]').value; // Obtém o ID do funcionário
+
+            // Verifica se o funcionário já está escalado nesse dia
+            const jaEscalado = Array.from(document.querySelectorAll(`input[name^="status"][value!="#"]`))
+                .some(input => {
+                    const inputDia = input.name.match(/\[(.*?)\]/g)[1].replace(/[\[\]']+/g, '');
+                    const inputFuncionarioId = input.name.match(/\[(.*?)\]/g)[0].replace(/[\[\]']+/g, '');
+                    return inputDia === dia && inputFuncionarioId === funcionarioId;
+                });
+
+            if (jaEscalado) {
+                alert('Este funcionário já está escalado para este dia em outro turno.');
+                return; // Impede a troca de status
+            }
+        }
+
+        // Atualiza o status e a aparência do botão
         button.textContent = nextStatus;
         button.setAttribute("data-status", nextStatus);
         button.nextElementSibling.value = nextStatus;
-
-        // Atualizar a classe do botão
-        button.className = `btn ${classes[nextStatus]} statusButton btn-e`;
+        button.className = `btn ${classes[nextStatus]} statusButton`;
     }
 </script>
 @endsection
