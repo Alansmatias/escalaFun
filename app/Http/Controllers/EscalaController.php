@@ -190,19 +190,7 @@ class EscalaController extends Controller
                 return $item->id_funcionario . '-' . $item->id_setor . '-' . $item->id_turno;
             });
 
-        // Busca todas as escalas
-        $escalas = Escala::with(['funcionario', 'setor', 'turno', 'periodo'])->get();
-
-        // Array para rastrear quais funcionários estão escalados em quais dias
-        $diasEscalados = [];
-
-        foreach ($escalas as $escala) {
-            if ($escala->id_funcionario) {
-                $diasEscalados[$escala->dia][] = $escala->id_funcionario;
-            }
-        }
-
-        return view('site.escala', compact('escalaHeaders', 'escalas', 'diasEscalados'));
+        return view('site.escala', compact('escalaHeaders', 'escalas'));
     }
     
 
