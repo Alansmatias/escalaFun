@@ -37,51 +37,57 @@
         <!-- Corpo da tabela -->
         <tbody>
         @foreach($escalas as $key => $escalasGrupo)
-        <tr>
-            <!-- Nome do Funcionário -->
-            <td>
-                {{ $escalasGrupo->first()->funcionario->nome }}
-                <input type="hidden" name="funcionario[{{ $key }}]" value="{{ $escalasGrupo->first()->funcionario->id }}">
-            </td>
+            <tr data-funcionario-id="{{ $escalasGrupo->first()->funcionario->id }}">
+                <!-- Nome do Funcionário -->
+                <td>
+                    {{ $escalasGrupo->first()->funcionario->nome }}
+                    <input type="hidden" name="funcionario[{{ $key }}]" value="{{ $escalasGrupo->first()->funcionario->id }}">
+                </td>
 
-            <!-- Nome do Setor -->
-            <td>
-                {{ $escalasGrupo->first()->setor->nome }}
-                <input type="hidden" name="setor[{{ $key }}]" value="{{ $escalasGrupo->first()->setor->id }}">
-            </td>
+                <!-- Nome do Setor -->
+                <td>
+                    {{ $escalasGrupo->first()->setor->nome }}
+                    <input type="hidden" name="setor[{{ $key }}]" value="{{ $escalasGrupo->first()->setor->id }}">
+                </td>
 
-            <!-- Nome do Turno -->
-            <td>
-                {{ $escalasGrupo->first()->turno->nome }}
-                <input type="hidden" name="turno[{{ $key }}]" value="{{ $escalasGrupo->first()->turno->id }}">
-            </td>
-            <!-- Status por Dia -->
-            @if($escalaHeaders)
-                @foreach($escalaHeaders as $header)
-                    <td data-dia="{{ $header['day'] }}">
-                        @php
-                            $escala = $escalasGrupo->firstWhere('dia', $header['day']);
-                            $status = $escala ? $escala->status : '#';
-                            $buttonClass = 'btn-secondary'; // Classe padrão
+                <!-- Nome do Turno -->
+                <td>
+                    {{ $escalasGrupo->first()->turno->nome }}
+                    <input type="hidden" name="turno[{{ $key }}]" value="{{ $escalasGrupo->first()->turno->id }}">
+                </td>
 
-                            if ($status === 'E') {
-                                $buttonClass = 'btn-success';
-                            } elseif ($status === 'D') {
-                                $buttonClass = 'btn-warning';
-                            } elseif ($status === 'F') {
-                                $buttonClass = 'btn-danger';
-                            }
-                        @endphp
-                        <button type="button" class="btn {{ $buttonClass }} statusButton" data-status="{{ $status }}" onclick="toggleStatus(this)">
-                            {{ $status }}
-                        </button>
-                        <input type="hidden" name="status[{{ $key }}][{{ $header['day'] }}]" value="{{ $status }}">
-                    </td>
-                @endforeach
-            @else
-                <td colspan="31">Nenhum período definido</td>
-            @endif
-        </tr>
+                <!-- Status por Dia -->
+                @if($escalaHeaders)
+                    @foreach($escalaHeaders as $header)
+                        <td data-dia="{{ $header['day'] }}">
+                            @php
+                                $escala = $escalasGrupo->firstWhere('dia', $header['day']);
+                                $status = $escala ? $escala->status : '#';
+                                $buttonClass = 'btn-secondary'; // Classe padrão
+
+                                if ($status === 'E') {
+                                    $buttonClass = 'btn-success';
+                                } elseif ($status === 'D') {
+                                    $buttonClass = 'btn-warning';
+                                } elseif ($status === 'F') {
+                                    $buttonClass = 'btn-danger';
+                                }
+                            @endphp
+                            <button type="button" class="btn {{ $buttonClass }} statusButton"
+                                data-status="{{ $status }}"
+                                data-dia="{{ $header['day'] }}"
+                                data-funcionario="{{ $escalasGrupo->first()->funcionario->id }}"
+                                data-setor-turno="{{ $escalasGrupo->first()->setor->id }}-{{ $escalasGrupo->first()->turno->id }}"
+                                onclick="toggleStatus(this)">
+                                {{ $status }}
+                            </button>
+                            <input type="hidden" name="status[{{ $escalasGrupo->first()->funcionario->id }}][{{ $header['day'] }}]" value="{{ $status }}">
+                        </td>
+                    @endforeach
+                @else
+                    <td colspan="31">Nenhum período definido</td>
+                @endif
+            </tr>
         @endforeach
         </tbody>
     </table>
@@ -105,30 +111,59 @@
         let nextIndex = (statuses.indexOf(currentStatus) + 1) % statuses.length;
         let nextStatus = statuses[nextIndex];
 
-        // Verifica se o próximo status é "#" e se o funcionário já está escalado no mesmo dia
-        if (nextStatus === "#") {
-            const dia = button.closest('td').getAttribute('data-dia'); // Obtém o dia da célula
-            const funcionarioId = button.closest('tr').querySelector('input[name^="funcionario"]').value; // Obtém o ID do funcionário
-
-            // Verifica se o funcionário já está escalado nesse dia
-            const jaEscalado = Array.from(document.querySelectorAll(`input[name^="status"][value!="#"]`))
-                .some(input => {
-                    const inputDia = input.name.match(/\[(.*?)\]/g)[1].replace(/[\[\]']+/g, '');
-                    const inputFuncionarioId = input.name.match(/\[(.*?)\]/g)[0].replace(/[\[\]']+/g, '');
-                    return inputDia === dia && inputFuncionarioId === funcionarioId;
-                });
-
-            if (jaEscalado) {
-                alert('Este funcionário já está escalado para este dia em outro turno.');
-                return; // Impede a troca de status
-            }
-        }
-
         // Atualiza o status e a aparência do botão
         button.textContent = nextStatus;
         button.setAttribute("data-status", nextStatus);
         button.nextElementSibling.value = nextStatus;
         button.className = `btn ${classes[nextStatus]} statusButton`;
     }
+
+    window.onload = function () {
+        console.log('Página carregada. Iniciando verificação de escalas...');
+        verificarEscalas();
+    };
+
+    function verificarEscalas() {
+        const botoes = document.querySelectorAll('.statusButton');
+        console.log(`Total de botões encontrados: ${botoes.length}`);
+
+        botoes.forEach(botao => {
+            const status = botao.getAttribute('data-status');
+            const dia = botao.getAttribute('data-dia');
+            const funcionario = botao.getAttribute('data-funcionario');
+            const setorTurno = botao.getAttribute('data-setor-turno');
+
+            console.log(`Botão encontrado - Funcionário: ${funcionario}, Status: ${status}, Dia: ${dia}, Setor-Turno: ${setorTurno}`);
+
+            if (status === '#') {
+                let jaEscalado = false;
+
+                botoes.forEach(outroBotao => {
+                    const outroDia = outroBotao.getAttribute('data-dia');
+                    const outroFuncionario = outroBotao.getAttribute('data-funcionario');
+                    const outroSetorTurno = outroBotao.getAttribute('data-setor-turno');
+
+                    if (
+                        outroDia === dia &&
+                        outroFuncionario === funcionario &&
+                        outroSetorTurno !== setorTurno &&
+                        outroBotao.getAttribute('data-status') !== '#'
+                    ) {
+                        console.log(`Funcionário ${funcionario} já está escalado no dia ${dia} em outro Setor/Turno.`);
+                        jaEscalado = true;
+                    }
+                });
+
+                if (jaEscalado) {
+                    console.log(`Desabilitando botão do dia ${dia} para o funcionário ${funcionario}.`);
+                    botao.disabled = true;
+                    botao.classList.add('btn-secondary', 'disabled');
+                    botao.title = "Funcionário já escalado em outro setor/turno";
+                    botao.textContent = 'X';
+                }
+            }
+        });
+    }
 </script>
+
 @endsection
