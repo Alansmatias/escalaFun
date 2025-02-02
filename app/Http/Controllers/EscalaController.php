@@ -156,7 +156,7 @@ class EscalaController extends Controller
     /**
      * Página que vai listar todos permitindo edição.
      */
-    public function listaEscala()
+    public function listaEscala($setorId = null, $turnoId = null)
     {
         $periodoId = 1; // Altere este valor conforme necessário
         $periodo = Periodo::find($periodoId);
@@ -183,12 +183,20 @@ class EscalaController extends Controller
         }
 
         // Carregar escalas e incluir relações com setor, turno e funcionário
-        $escalas = Escala::with(['setor', 'turno', 'funcionario'])
-            ->where('id_periodo', $periodoId)
-            ->get()
-            ->groupBy(function ($item) {
-                return $item->id_funcionario . '-' . $item->id_setor . '-' . $item->id_turno;
-            });
+        $query = Escala::with(['setor', 'turno', 'funcionario'])
+            ->where('id_periodo', $periodoId);
+
+        if ($setorId) {
+            $query->where('id_setor', $setorId);
+        }
+
+        if ($turnoId) {
+            $query->where('id_turno', $turnoId);
+        }
+
+        $escalas = $query->get()->groupBy(function ($item) {
+            return $item->id_funcionario . '-' . $item->id_setor . '-' . $item->id_turno;
+        });
 
         return view('site.escala', compact('escalaHeaders', 'escalas'));
     }

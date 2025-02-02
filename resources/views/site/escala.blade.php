@@ -81,7 +81,7 @@
                                 onclick="toggleStatus(this)">
                                 {{ $status }}
                             </button>
-                            <input type="hidden" name="status[{{ $escalasGrupo->first()->funcionario->id }}][{{ $header['day'] }}]" value="{{ $status }}">
+                            <input type="hidden" name="status[{{ $escalasGrupo->first()->funcionario->id }}-{{ $escalasGrupo->first()->setor->id }}-{{ $escalasGrupo->first()->turno->id }}][{{ $header['day'] }}]" value="{{ $status }}">
                         </td>
                     @endforeach
                 @else
@@ -117,12 +117,12 @@
         button.nextElementSibling.value = nextStatus;
         button.className = `btn ${classes[nextStatus]} statusButton`;
     }
-
+    
     window.onload = function () {
         console.log('Página carregada. Iniciando verificação de escalas...');
         verificarEscalas();
     };
-
+    
     function verificarEscalas() {
         const botoes = document.querySelectorAll('.statusButton');
         console.log(`Total de botões encontrados: ${botoes.length}`);
