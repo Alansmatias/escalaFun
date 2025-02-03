@@ -14,6 +14,54 @@
 @section('conteudo')
 <h1>Gerenciar Escala de Funcionários<br><br></h1>
 
+<form class="row g-3 border p-0" method="GET" action="{{ route('escala') }}">
+    <div class="row row-cols-1 row-cols-sm-2 row-cols-md-4 mb-3 d-flex flex-wrap">
+        <!-- Filtro Funcionário -->
+        <div class="me-3">
+            <label for="filtroFuncionario" class="form-label">Funcionário</label>
+            <select class="form-select" name="funcionario" id="filtroFuncionario">
+                <option value="">Todos</option>
+                @foreach($funcionarios as $funcionario)
+                    <option value="{{ $funcionario->id }}" {{ request('funcionario') == $funcionario->id ? 'selected' : '' }}>
+                        {{ $funcionario->nome }}
+                    </option>
+                @endforeach
+            </select>
+        </div>
+
+        <!-- Filtro Setor -->
+        <div class="me-3">
+            <label for="filtroSetor" class="form-label">Setor</label>
+            <select class="form-select" name="setor" id="filtroSetor">
+                <option value="">Todos</option>
+                @foreach($setores as $setor)
+                    <option value="{{ $setor->id }}" {{ request('setor') == $setor->id ? 'selected' : '' }}>
+                        {{ $setor->nome }}
+                    </option>
+                @endforeach
+            </select>
+        </div>
+
+        <!-- Filtro Turno -->
+        <div>
+            <label for="filtroTurno" class="form-label">Turno</label>
+            <select class="form-select" name="turno" id="filtroTurno">
+                <option value="">Todos</option>
+                @foreach($turnos as $turno)
+                    <option value="{{ $turno->id }}" {{ request('turno') == $turno->id ? 'selected' : '' }}>
+                        {{ $turno->nome }}
+                    </option>
+                @endforeach
+            </select>
+        </div>
+    </div>
+
+    <!-- Botão de Filtrar -->
+    <div class="col-12 mb-3">
+        <button class="btn btn-primary" type="submit">Filtrar</button>
+    </div>
+</form>
+
 <form class="row g-3" method="POST" action="{{ route('escalar.atualizar') }}">
     @csrf
     <table class="table">
@@ -89,7 +137,8 @@
                                     data-dia="{{ $header['day'] }}"
                                     data-funcionario="{{ $funcionarioId }}"
                                     data-setor-turno="{{ $setorTurno }}"
-                                    {{ $bloqueado ? 'disabled' : '' }}>
+                                    {{ $bloqueado ? 'disabled' : '' }}
+                                    onclick="toggleStatus(this)">
                                 {{ $bloqueado ? 'X' : $status }}
                             </button>
                             <input type="hidden" name="status[{{ $escalasGrupo->first()->funcionario->id }}-{{ $escalasGrupo->first()->setor->id }}-{{ $escalasGrupo->first()->turno->id }}][{{ $header['day'] }}]" value="{{ $status }}">

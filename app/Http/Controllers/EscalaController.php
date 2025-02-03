@@ -156,58 +156,66 @@ class EscalaController extends Controller
     /**
      * Página que vai listar todos permitindo edição.
      */
-    public function listaEscala($setorId = null, $turnoId = null)
+    public function listaEscala(Request $request)
     {
-        $periodoId = 1; // Altere este valor conforme necessário
+        $periodoId = 1; // Ajuste conforme necessário
         $periodo = Periodo::find($periodoId);
-
+    
+        // Captura os filtros do request
+        $funcionarioId = $request->input('funcionario');
+        $setorId = $request->input('setor');
+        $turnoId = $request->input('turno');
+    
         $escalaHeaders = [];
-
-        Carbon::setLocale('pt_BR'); // Define a linguagem para português
-
+    
+        Carbon::setLocale('pt_BR');
+    
         if ($periodo) {
             $dataInicio = Carbon::parse($periodo->dataIni);
             $dataFim = Carbon::parse($periodo->dataFim);
-
+    
             for ($data = $dataInicio; $data->lte($dataFim); $data->addDay()) {
                 $escalaHeaders[] = [
-                    'day' => $data->format('Y-m-d'), // Data completa como chave
-                    'dayName' => $data->translatedFormat('D'), // dia da semana traduzido
-                    'diaDoMes' => $data->day, // Dia do mês
+                    'day' => $data->format('Y-m-d'),
+                    'dayName' => $data->translatedFormat('D'),
+                    'diaDoMes' => $data->day,
                 ];
             }
         }
-
+    
         if (empty($escalaHeaders)) {
-            $escalaHeaders = null; // Nenhum período definido
+            $escalaHeaders = null;
         }
-
-        // Carregar escalas e incluir relações com setor, turno e funcionário
+    
+        // Criar a query da escala
         $query = Escala::with(['setor', 'turno', 'funcionario'])
             ->where('id_periodo', $periodoId);
+    
+        // Aplicar filtros apenas se os valores forem preenchidos
+        if (!empty($funcionarioId)) {
+            $query->where('id_funcionario', $funcionarioId);
+        }
 
-        if ($setorId) {
+        if (!empty($setorId)) {
             $query->where('id_setor', $setorId);
         }
-
-        if ($turnoId) {
+    
+        if (!empty($turnoId)) {
             $query->where('id_turno', $turnoId);
         }
-
+    
         $escalas = $query->get()->groupBy(function ($item) {
             return $item->id_funcionario . '-' . $item->id_setor . '-' . $item->id_turno;
         });
-
-        // Antes de retornar a view, processamos os status bloqueados
+    
         $bloqueios = [];
-
+    
         foreach ($escalas as $grupo) {
             foreach ($grupo as $escala) {
                 $dia = $escala->dia;
                 $funcionarioId = $escala->id_funcionario;
                 $setorTurno = "{$escala->id_setor}-{$escala->id_turno}";
-        
-                // Se o funcionário já tem uma escala definida no dia, bloquear os outros '#'
+    
                 if ($escala->status !== '#') {
                     if (!isset($bloqueios[$funcionarioId][$dia])) {
                         $bloqueios[$funcionarioId][$dia] = [];
@@ -216,11 +224,14 @@ class EscalaController extends Controller
                 }
             }
         }
-
-        return view('site.escala', compact('escalaHeaders', 'escalas', 'bloqueios'));
-    }
     
-
+        $funcionarios = Funcionario::all();
+        $setores = Setor::all();
+        $turnos = Turno::all();
+    
+        return view('site.escala', compact('escalaHeaders', 'escalas', 'bloqueios', 'funcionarios', 'setores', 'turnos'));
+    }
+        
     /**
      * Display the specified resource.
      */
@@ -331,7 +342,7 @@ class EscalaController extends Controller
             return redirect()->back()->withErrors(['error' => $erros]);
         }
     
-        return redirect()->route('escala')->with('success', 'Escala atualizada com sucesso!');
+        return redirect()->back()->with('success', 'Escala atualizada com sucesso!');
     }    
 
     /**
