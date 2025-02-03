@@ -73,13 +73,24 @@
                                     $buttonClass = 'btn-danger';
                                 }
                             @endphp
+                            @php
+                                $funcionarioId = $escalasGrupo->first()->funcionario->id;
+                                $setorTurno = "{$escalasGrupo->first()->setor->id}-{$escalasGrupo->first()->turno->id}";
+                                $status = $escala ? $escala->status : '#';
+
+                                // Bloqueia apenas se o status for '#' e o funcionário já estiver escalado em outro setor/turno
+                                $bloqueado = $status === '#' &&
+                                            isset($bloqueios[$funcionarioId][$header['day']]) &&
+                                            !in_array($setorTurno, $bloqueios[$funcionarioId][$header['day']]);
+                            @endphp
+
                             <button type="button" class="btn {{ $buttonClass }} statusButton"
-                                data-status="{{ $status }}"
-                                data-dia="{{ $header['day'] }}"
-                                data-funcionario="{{ $escalasGrupo->first()->funcionario->id }}"
-                                data-setor-turno="{{ $escalasGrupo->first()->setor->id }}-{{ $escalasGrupo->first()->turno->id }}"
-                                onclick="toggleStatus(this)">
-                                {{ $status }}
+                                    data-status="{{ $status }}"
+                                    data-dia="{{ $header['day'] }}"
+                                    data-funcionario="{{ $funcionarioId }}"
+                                    data-setor-turno="{{ $setorTurno }}"
+                                    {{ $bloqueado ? 'disabled' : '' }}>
+                                {{ $bloqueado ? 'X' : $status }}
                             </button>
                             <input type="hidden" name="status[{{ $escalasGrupo->first()->funcionario->id }}-{{ $escalasGrupo->first()->setor->id }}-{{ $escalasGrupo->first()->turno->id }}][{{ $header['day'] }}]" value="{{ $status }}">
                         </td>
@@ -116,53 +127,6 @@
         button.setAttribute("data-status", nextStatus);
         button.nextElementSibling.value = nextStatus;
         button.className = `btn ${classes[nextStatus]} statusButton`;
-    }
-    
-    window.onload = function () {
-        console.log('Página carregada. Iniciando verificação de escalas...');
-        verificarEscalas();
-    };
-    
-    function verificarEscalas() {
-        const botoes = document.querySelectorAll('.statusButton');
-        console.log(`Total de botões encontrados: ${botoes.length}`);
-
-        botoes.forEach(botao => {
-            const status = botao.getAttribute('data-status');
-            const dia = botao.getAttribute('data-dia');
-            const funcionario = botao.getAttribute('data-funcionario');
-            const setorTurno = botao.getAttribute('data-setor-turno');
-
-            console.log(`Botão encontrado - Funcionário: ${funcionario}, Status: ${status}, Dia: ${dia}, Setor-Turno: ${setorTurno}`);
-
-            if (status === '#') {
-                let jaEscalado = false;
-
-                botoes.forEach(outroBotao => {
-                    const outroDia = outroBotao.getAttribute('data-dia');
-                    const outroFuncionario = outroBotao.getAttribute('data-funcionario');
-                    const outroSetorTurno = outroBotao.getAttribute('data-setor-turno');
-
-                    if (
-                        outroDia === dia &&
-                        outroFuncionario === funcionario &&
-                        outroSetorTurno !== setorTurno &&
-                        outroBotao.getAttribute('data-status') !== '#'
-                    ) {
-                        console.log(`Funcionário ${funcionario} já está escalado no dia ${dia} em outro Setor/Turno.`);
-                        jaEscalado = true;
-                    }
-                });
-
-                if (jaEscalado) {
-                    console.log(`Desabilitando botão do dia ${dia} para o funcionário ${funcionario}.`);
-                    botao.disabled = true;
-                    botao.classList.add('btn-secondary', 'disabled');
-                    botao.title = "Funcionário já escalado em outro setor/turno";
-                    botao.textContent = 'X';
-                }
-            }
-        });
     }
 </script>
 

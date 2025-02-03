@@ -198,7 +198,26 @@ class EscalaController extends Controller
             return $item->id_funcionario . '-' . $item->id_setor . '-' . $item->id_turno;
         });
 
-        return view('site.escala', compact('escalaHeaders', 'escalas'));
+        // Antes de retornar a view, processamos os status bloqueados
+        $bloqueios = [];
+
+        foreach ($escalas as $grupo) {
+            foreach ($grupo as $escala) {
+                $dia = $escala->dia;
+                $funcionarioId = $escala->id_funcionario;
+                $setorTurno = "{$escala->id_setor}-{$escala->id_turno}";
+        
+                // Se o funcionário já tem uma escala definida no dia, bloquear os outros '#'
+                if ($escala->status !== '#') {
+                    if (!isset($bloqueios[$funcionarioId][$dia])) {
+                        $bloqueios[$funcionarioId][$dia] = [];
+                    }
+                    $bloqueios[$funcionarioId][$dia][] = $setorTurno;
+                }
+            }
+        }
+
+        return view('site.escala', compact('escalaHeaders', 'escalas', 'bloqueios'));
     }
     
 
