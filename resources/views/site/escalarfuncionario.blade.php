@@ -14,7 +14,7 @@
 @section('conteudo')
 <h1>Escalar Novo Funcionário<br><br></h1>
 
-<form class="row g-3" method="POST" action="{{ route('escalar.salvar') }}">
+<form class="row g-3 overflow-auto" method="POST" action="{{ route('escalar.salvar') }}">
     @csrf
     <table class="table">
         <!-- Código anterior -->
@@ -94,18 +94,23 @@
 
 <script>
     function toggleStatus(button) {
-        // Array com os status alternados
-        const statuses = ["E", "D", "F"];
-        // Obter o status atual do botão
+        const statuses = ["E", "D", "F", "#"];
+        const classes = {
+            "E": "btn-success",
+            "D": "btn-warning",
+            "F": "btn-danger",
+            "#": "btn-secondary"
+        };
+
         let currentStatus = button.getAttribute("data-status");
-        // Encontrar o próximo status no array
         let nextIndex = (statuses.indexOf(currentStatus) + 1) % statuses.length;
         let nextStatus = statuses[nextIndex];
-        // Atualizar o texto e o atributo data-status do botão
+
+        // Atualiza o status e a aparência do botão
         button.textContent = nextStatus;
         button.setAttribute("data-status", nextStatus);
-        // Atualizar o campo oculto do formulário
         button.nextElementSibling.value = nextStatus;
+        button.className = `btn ${classes[nextStatus]} statusButton`;
     }
 </script>
 @endsection

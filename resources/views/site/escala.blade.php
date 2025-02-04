@@ -15,7 +15,7 @@
 <h1>Gerenciar Escala de Funcionários<br><br></h1>
 
 <form class="row g-3 border p-0" method="GET" action="{{ route('escala') }}">
-    <div class="row row-cols-1 row-cols-sm-2 row-cols-md-4 mb-3 d-flex flex-wrap">
+    <div class="row row-cols-1 row-cols-md-4 mb-3 d-flex flex-wrap">
         <!-- Filtro Funcionário -->
         <div class="me-3">
             <label for="filtroFuncionario" class="form-label">Funcionário</label>
@@ -62,7 +62,7 @@
     </div>
 </form>
 
-<form class="row g-3" method="POST" action="{{ route('escalar.atualizar') }}">
+<form class="row g-3 overflow-auto" method="POST" action="{{ route('escalar.atualizar') }}">
     @csrf
     <table class="table">
         <!-- Cabeçalho da tabela -->

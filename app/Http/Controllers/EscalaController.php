@@ -187,15 +187,19 @@ class EscalaController extends Controller
             $escalaHeaders = null;
         }
     
-        // Criar a query da escala
+        // 🔹 Obtem todas as escalas (SEM FILTRO) para o bloqueio
+        $todasEscalas = Escala::with(['setor', 'turno', 'funcionario'])
+            ->where('id_periodo', $periodoId)
+            ->get();
+    
+        // 🔹 Query com filtros aplicados para exibição
         $query = Escala::with(['setor', 'turno', 'funcionario'])
             ->where('id_periodo', $periodoId);
     
-        // Aplicar filtros apenas se os valores forem preenchidos
         if (!empty($funcionarioId)) {
             $query->where('id_funcionario', $funcionarioId);
         }
-
+    
         if (!empty($setorId)) {
             $query->where('id_setor', $setorId);
         }
@@ -208,20 +212,19 @@ class EscalaController extends Controller
             return $item->id_funcionario . '-' . $item->id_setor . '-' . $item->id_turno;
         });
     
+        // 🔹 Calcula bloqueios considerando TODAS as escalas
         $bloqueios = [];
     
-        foreach ($escalas as $grupo) {
-            foreach ($grupo as $escala) {
-                $dia = $escala->dia;
-                $funcionarioId = $escala->id_funcionario;
-                $setorTurno = "{$escala->id_setor}-{$escala->id_turno}";
+        foreach ($todasEscalas as $escala) { 
+            $dia = $escala->dia;
+            $funcionarioId = $escala->id_funcionario;
+            $setorTurno = "{$escala->id_setor}-{$escala->id_turno}";
     
-                if ($escala->status !== '#') {
-                    if (!isset($bloqueios[$funcionarioId][$dia])) {
-                        $bloqueios[$funcionarioId][$dia] = [];
-                    }
-                    $bloqueios[$funcionarioId][$dia][] = $setorTurno;
+            if ($escala->status !== '#') {
+                if (!isset($bloqueios[$funcionarioId][$dia])) {
+                    $bloqueios[$funcionarioId][$dia] = [];
                 }
+                $bloqueios[$funcionarioId][$dia][] = $setorTurno;
             }
         }
     
