@@ -5,6 +5,7 @@ use App\Http\Controllers\FuncionarioController;
 use App\Http\Controllers\SetorController;
 use App\Http\Controllers\TurnoController;
 use App\Http\Controllers\EscalaController;
+use App\Http\Controllers\RelatorioController;
 
 
 /*
@@ -60,3 +61,8 @@ Route::get('/cadastroTurno', [TurnoController::class, 'create'])->name('home.cad
 Route::post('/turno', [TurnoController::class, 'store'])->name('turno.store');// Armazenar novo turno
 Route::get('/turno/{id}/edit', [TurnoController::class, 'edit'])->name('turno.edit'); // Página de edição do turno
 Route::put('/turno/{id}', [TurnoController::class, 'update'])->name('turno.update'); // Atualizar turno existente
+
+/**
+ * Rotas Relacionadas a Relatório
+ */
+Route::get('/funcionarios_escalados_setor_turno', [RelatorioController::class, 'funcionarios_escalados_setor_turno'])->name('funcionarios_escalados_setor_turno');
