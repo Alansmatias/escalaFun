@@ -4,7 +4,7 @@
 <h1>Funcionários Escalados No Período Por Setor e Turno<br><br></h1>
 
 <!-- Filtro e Gerar Relatório -->
-<form class="row g-3" method="GET" action="#">
+<form class="row g-3" method="GET" action="{{ route('funcionarios_escalados_setor_turno') }}">
     @csrf
     <div class="col-md-3 mb-3">
         <label for="setor" class="form-label">Setor</label>
@@ -48,27 +48,30 @@
 <br>
 
 <!-- Tabela do Relatório -->
-@if(isset($escalas) && count($escalas) > 0)
-    <table class="table table-bordered">
-        <thead>
-            <tr>
-                <th>Data</th>
-                <th>Dia da Semana</th>
-                <th>Funcionários Escalados</th>
-            </tr>
-        </thead>
-        <tbody>
-            @foreach($escalas as $escala)
-                <tr>
-                    <td>{{ $escala->data }}</td>
-                    <td>{{ ucfirst($escala->dia_semana) }}</td>
-                    <td>{{ $escala->funcionarios }}</td>
-                </tr>
-            @endforeach
-        </tbody>
-    </table>
+@if(request()->has('setor') || request()->has('turno') || request()->has('dataInicio') || request()->has('dataFim'))
+    @if(isset($escalas) && count($escalas) > 0)
+        <div class="overflow-auto">
+            <div class="d-flex">
+                @foreach($escalas as $escala)
+                    <div class="card me-3" style="min-width: 250px; max-width: 300px;">
+                        <div class="card-header text-center">
+                            <strong>{{ $escala->data }}</strong><br>
+                            <span>{{ ucfirst($escala->dia_semana) }}</span>
+                        </div>
+                        <div class="card-body">
+                            @foreach(explode(';', $escala->funcionarios) as $funcionario)
+                                <p>{{ $funcionario }}</p>
+                            @endforeach
+                        </div>
+                    </div>
+                @endforeach
+            </div>
+        </div>
+    @else
+        <p class="alert alert-warning">Nenhum funcionário escalado encontrado para o período selecionado.</p>
+    @endif
 @else
-    <p class="alert alert-warning">Nenhum funcionário escalado encontrado para o período selecionado.</p>
+    <p class="alert alert-info">Utilize os filtros acima para gerar o relatório. Selecione pelo menos um filtro para visualizar os dados.</p>
 @endif
 
 @endsection
