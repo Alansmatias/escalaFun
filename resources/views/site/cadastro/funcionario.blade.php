@@ -52,34 +52,34 @@
     </div>
   </div>
 
-  <div class>
-  <label for="folga" class="form-label">Dia de Folga</label>
+  <div>
+  <label for="folga" class="form-label">Folga(s)</label>
   <div class="mb-3">
-    <div class="form-check form-check-inline">
+    <div class="form-check">
       <input class="form-check-input" type="checkbox" name="folga[]" id="dom" value="dom" {{ is_array(old('folga')) && in_array('dom', old('folga')) ? 'checked' : '' }}>
       <label class="form-check-label" for="dom">Domingo</label>
     </div>
-    <div class="form-check form-check-inline">
+    <div class="form-check">
       <input class="form-check-input" type="checkbox" name="folga[]" id="seg" value="seg" {{ is_array(old('folga')) && in_array('seg', old('folga')) ? 'checked' : '' }}>
       <label class="form-check-label" for="seg">Segunda-feira</label>
     </div>
-    <div class="form-check form-check-inline">
+    <div class="form-check">
       <input class="form-check-input" type="checkbox" name="folga[]" id="ter" value="ter" {{ is_array(old('folga')) && in_array('ter', old('folga')) ? 'checked' : '' }}>
       <label class="form-check-label" for="ter">Terça-feira</label>
     </div>
-    <div class="form-check form-check-inline">
+    <div class="form-check">
       <input class="form-check-input" type="checkbox" name="folga[]" id="qua" value="qua" {{ is_array(old('folga')) && in_array('qua', old('folga')) ? 'checked' : '' }}>
       <label class="form-check-label" for="qua">Quarta-feira</label>
     </div>
-    <div class="form-check form-check-inline">
+    <div class="form-check">
       <input class="form-check-input" type="checkbox" name="folga[]" id="qui" value="qui" {{ is_array(old('folga')) && in_array('qui', old('folga')) ? 'checked' : '' }}>
       <label class="form-check-label" for="qui">Quinta-feira</label>
     </div>
-    <div class="form-check form-check-inline">
+    <div class="form-check">
       <input class="form-check-input" type="checkbox" name="folga[]" id="sex" value="sex" {{ is_array(old('folga')) && in_array('sex', old('folga')) ? 'checked' : '' }}>
       <label class="form-check-label" for="sex">Sexta-feira</label>
     </div>
-    <div class="form-check form-check-inline">
+    <div class="form-check">
       <input class="form-check-input" type="checkbox" name="folga[]" id="sab" value="sab" {{ is_array(old('folga')) && in_array('sab', old('folga')) ? 'checked' : '' }}>
       <label class="form-check-label" for="sab">Sábado</label>
     </div>
