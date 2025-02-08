@@ -48,30 +48,51 @@
 <br>
 
 <!-- Tabela do Relatório -->
-@if(request()->has('setor') || request()->has('turno') || request()->has('dataInicio') || request()->has('dataFim'))
-    @if(isset($escalas) && count($escalas) > 0)
-        <div class="overflow-auto">
-            <div class="d-flex">
-                @foreach($escalas as $escala)
-                    <div class="card me-3" style="min-width: 250px; max-width: 300px;">
-                        <div class="card-header text-center">
-                            <strong>{{ $escala->data }}</strong><br>
-                            <span>{{ ucfirst($escala->dia_semana) }}</span>
-                        </div>
-                        <div class="card-body">
-                            @foreach(explode(';', $escala->funcionarios) as $funcionario)
-                                <p>{{ $funcionario }}</p>
-                            @endforeach
-                        </div>
-                    </div>
-                @endforeach
-            </div>
-        </div>
-    @else
-        <p class="alert alert-warning">Nenhum funcionário escalado encontrado para o período selecionado.</p>
-    @endif
-@else
-    <p class="alert alert-info">Utilize os filtros acima para gerar o relatório. Selecione pelo menos um filtro para visualizar os dados.</p>
-@endif
+<div id="tabela-escalas"></div>
+<div>
+    <button id="print-table">Print Table</button>
+</div>
+
+<script>
+    var escalasData = {!! json_encode($escalas) !!};
+</script>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        console.log("Tabulator iniciado!");
+
+        // Verifica se os dados estão sendo carregados corretamente
+        console.log("Dados carregados:", escalasData);
+
+        // Converte os dados do Laravel para o formato esperado pelo Tabulator
+        var formattedData = escalasData.map(escala => ({
+            data: escala.data,
+            dia_semana: escala.dia_semana,
+            funcionarios: escala.funcionarios.replace(/;/g, ', ') // Substitui ";" por ", "
+        }));
+
+        // Inicializa a tabela
+        var tabela = new Tabulator("#tabela-escalas", {
+            data: formattedData,
+            layout: "fitColumns",
+            printAsHtml: true,
+            printHeader:"<h1>Example Table Header<h1>",
+            printFooter:"<h2>Example Table Footer<h2>",
+            columns: [
+                { title: "Data", field: "data", hozAlign: "center" },
+                { title: "Dia da Semana", field: "dia_semana", hozAlign: "center" },
+                { title: "Funcionários", field: "funcionarios", hozAlign: "left" }
+            ]
+        });
+
+        console.log("Tabela carregada com sucesso!");
+
+        //print button
+        document.getElementById("print-table").addEventListener("click", function(){
+            tabela.print(false, true);
+        });
+    });
+</script>
+
 
 @endsection
