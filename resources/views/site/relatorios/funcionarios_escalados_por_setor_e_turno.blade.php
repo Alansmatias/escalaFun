@@ -50,7 +50,8 @@
 <!-- Tabela do Relatório -->
 <div id="tabela-escalas"></div>
 <div>
-    <button id="print-table">Print Table</button>
+    <button class="btn btn-outline-secondary mt-2" id="print-table">Imprimir</button>
+    <button class="btn btn-outline-secondary mt-2" id="#">Salvar Xls</button>
 </div>
 
 <script>

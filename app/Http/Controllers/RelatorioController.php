@@ -29,14 +29,12 @@ class RelatorioController extends Controller
             ->join('funcionarios as b', 'a.id_funcionario', '=', 'b.id')
             ->join('setors as c', 'a.id_setor', '=', 'c.id')
             ->join('turnos as d', 'a.id_turno', '=', 'd.id')
-            ->join('periodos as e', 'a.id_periodo', '=', 'e.id')
             ->select(
-                DB::raw("DATE_FORMAT(a.dia, '%Y-%m-%d') AS data"), // Pega a data no formato Y-m-d
+                DB::raw("DATE_FORMAT(a.dia, '%d-%m-%Y') AS data"), // Formata a data como dd-mm-yyyy
                 DB::raw("DAYNAME(a.dia) AS dia_semana"),
                 DB::raw("GROUP_CONCAT(b.nome ORDER BY b.nome SEPARATOR '; ') AS funcionarios")
             )
-            ->where('e.dataIni', '=', $dataInicio)
-            ->where('e.dataFim', '=', $dataFim)
+            ->whereBetween('a.dia', [$dataInicio, $dataFim]) // Filtro direto na coluna a.dia
             ->where('a.status', '=', 'E')
             ->when($setorId, function ($query) use ($setorId) {
                 return $query->where('a.id_setor', $setorId);
@@ -51,7 +49,7 @@ class RelatorioController extends Controller
         // Ajusta o nome do dia da semana para PT-BR
         foreach ($escalas as $escala) {
             $escala->dia_semana = ucfirst(Carbon::parse($escala->data)->translatedFormat('l'));
-            $escala->data = Carbon::createFromFormat('Y-m-d', $escala->data)->format('d/m/Y');
+            $escala->data = Carbon::parse($escala->data)->format('d/m/Y');
         }
     
         return view('site/relatorios/funcionarios_escalados_por_setor_e_turno', compact('setores', 'turnos', 'escalas'));
