@@ -36,10 +36,4 @@ class Escala extends Model
     {
         return $this->belongsTo(Turno::class, 'id_turno');
     }
-
-    // Relacionamento: Uma escala pertence a um período
-    public function periodo()
-    {
-        return $this->belongsTo(Periodo::class, 'id_periodo');
-    }
 }

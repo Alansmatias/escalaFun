@@ -26,9 +26,6 @@ return new class extends Migration
             $table->unsignedBigInteger('id_turno');
             $table->foreign('id_turno')->references('id')->on('turnos');    
 
-            $table->unsignedBigInteger('id_periodo');
-            $table->foreign('id_periodo')->references('id')->on('periodos');   
-
             $table->enum('status', ['E', 'F', 'D', 'A']); //ESCALADO, FOLGA, DESCANÇO, AUSENTE
 
             $table->string ('observacao')->nullable();

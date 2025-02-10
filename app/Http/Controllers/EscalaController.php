@@ -36,7 +36,7 @@ class EscalaController extends Controller
     public function escalar()
     {
         // Definir o ID do período manualmente
-        $periodoId = 1; // Altere este valor conforme necessário
+        $periodoId = 2; // Altere este valor conforme necessário
 
         // Buscar o período específico pelo ID
         $periodo = Periodo::find($periodoId);
@@ -90,7 +90,7 @@ class EscalaController extends Controller
         ]);
     
         // Obter o ID do período (fixo ou enviado pelo formulário)
-        $periodoId = 1; // Ajuste conforme necessário
+        $periodoId = 2; // Ajuste conforme necessário
     
         // Obter o período correspondente para cálculo das datas
         $periodo = DB::table('periodos')->where('id', $periodoId)->first();
@@ -120,7 +120,7 @@ class EscalaController extends Controller
                 $existeEscala = DB::table('escalas')
                     ->where('id_funcionario', $funcionarioId)
                     ->where('dia', $date)
-                    ->where('id_periodo', $periodoId)
+                    ->whereBetween('dia', [$periodo->dataIni, $periodo->dataFim])
                     ->exists();
     
                 if ($existeEscala) {
@@ -135,7 +135,6 @@ class EscalaController extends Controller
                         'id_funcionario' => $funcionarioId,
                         'id_setor' => $setorId,
                         'id_turno' => $turnoId,
-                        'id_periodo' => $periodoId,
                         'dia' => $date,
                     ],
                     [
@@ -158,7 +157,7 @@ class EscalaController extends Controller
      */
     public function listaEscala(Request $request)
     {
-        $periodoId = 1; // Ajuste conforme necessário
+        $periodoId = 2; // Ajuste conforme necessário
         $periodo = Periodo::find($periodoId);
     
         // Captura os filtros do request
@@ -189,12 +188,12 @@ class EscalaController extends Controller
     
         // 🔹 Obtem todas as escalas (SEM FILTRO) para o bloqueio
         $todasEscalas = Escala::with(['setor', 'turno', 'funcionario'])
-            ->where('id_periodo', $periodoId)
+            ->whereBetween('dia', [$dataInicio, $dataFim])
             ->get();
     
         // 🔹 Query com filtros aplicados para exibição
         $query = Escala::with(['setor', 'turno', 'funcionario'])
-            ->where('id_periodo', $periodoId);
+            ->whereBetween('dia', [$dataInicio, $dataFim]);
     
         if (!empty($funcionarioId)) {
             $query->where('id_funcionario', $funcionarioId);
@@ -267,7 +266,7 @@ class EscalaController extends Controller
         ]);
     
         // Obter o ID do período (fixo ou enviado pelo formulário)
-        $periodoId = 1; // Ajuste conforme necessário
+        $periodoId = 2; // Ajuste conforme necessário
     
         // Obter o período correspondente para cálculo das datas
         $periodo = DB::table('periodos')->where('id', $periodoId)->first();
@@ -295,7 +294,7 @@ class EscalaController extends Controller
                     $escala = DB::table('escalas')
                         ->where('id_funcionario', $funcionarioId)
                         ->where('dia', $date)
-                        ->where('id_periodo', $periodoId)
+                        ->whereBetween('dia', [$periodo->dataIni, $periodo->dataFim])
                         ->where('id_setor', $setorId)
                         ->where('id_turno', $turnoId)
                         ->first();
@@ -310,7 +309,7 @@ class EscalaController extends Controller
                 $escala = DB::table('escalas')
                     ->where('id_funcionario', $funcionarioId)
                     ->where('dia', $date)
-                    ->where('id_periodo', $periodoId)
+                    ->whereBetween('dia', [$periodo->dataIni, $periodo->dataFim])
                     ->first();
         
                 if ($escala) {
@@ -325,7 +324,6 @@ class EscalaController extends Controller
                     DB::table('escalas')->insert([
                         'id_funcionario' => $funcionarioId,
                         'dia' => $date,
-                        'id_periodo' => $periodoId,
                         'id_setor' => $setorId,
                         'id_turno' => $turnoId,
                         'status' => $status,
