@@ -168,12 +168,13 @@ class EscalaController extends Controller
         $escalaHeaders = [];
     
         Carbon::setLocale('pt_BR');
+
+        // Definir datas do período
+        $dataInicio = Carbon::parse($periodo->dataIni);
+        $dataFim = Carbon::parse($periodo->dataFim);        
     
         if ($periodo) {
-            $dataInicio = Carbon::parse($periodo->dataIni);
-            $dataFim = Carbon::parse($periodo->dataFim);
-    
-            for ($data = $dataInicio; $data->lte($dataFim); $data->addDay()) {
+            for ($data = $dataInicio->copy(); $data->lte($dataFim); $data->addDay()) {
                 $escalaHeaders[] = [
                     'day' => $data->format('Y-m-d'),
                     'dayName' => $data->translatedFormat('D'),
@@ -188,8 +189,8 @@ class EscalaController extends Controller
     
         // 🔹 Obtem todas as escalas (SEM FILTRO) para o bloqueio
         $todasEscalas = Escala::with(['setor', 'turno', 'funcionario'])
-            ->whereBetween('dia', [$dataInicio, $dataFim])
-            ->get();
+        ->whereBetween('dia', [$dataInicio, $dataFim])
+        ->get();
     
         // 🔹 Query com filtros aplicados para exibição
         $query = Escala::with(['setor', 'turno', 'funcionario'])
