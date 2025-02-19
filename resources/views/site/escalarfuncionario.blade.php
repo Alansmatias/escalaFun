@@ -40,7 +40,7 @@
         <tr>
             <!-- Select para Funcionário -->
             <th scope="row">
-                <select class="form-select" name="funcionario[{{ $i }}]" id="funcionario-{{ $i }}">
+                <select class="form-select" name="funcionario[{{ $i }}]" id="funcionario-{{ $i }}" required>
                     <option selected disabled value="">Selecione o Funcionário</option>
                     @foreach($funcionarios as $funcionario)
                         <option value="{{ $funcionario->id }}">{{ $funcionario->nome }}</option>
@@ -50,7 +50,7 @@
 
             <!-- Select para Setor -->
             <td>
-                <select class="form-select" name="setor[{{ $i }}]" id="setor-{{ $i }}">
+                <select class="form-select" name="setor[{{ $i }}]" id="setor-{{ $i }}" required>
                     <option selected disabled value="">Selecione o Setor</option>
                     @foreach($setores as $setor)
                         <option value="{{ $setor->id }}">{{ $setor->nome }}</option>
@@ -60,7 +60,7 @@
 
             <!-- Select para Turno -->
             <td>
-                <select class="form-select" name="turno[{{ $i }}]" id="turno-{{ $i }}">
+                <select class="form-select" name="turno[{{ $i }}]" id="turno-{{ $i }}" required>
                     <option selected disabled value="">Selecione o Turno</option>
                     @foreach($turnos as $turno)
                         <option value="{{ $turno->id }}">{{ $turno->nome }}</option>
