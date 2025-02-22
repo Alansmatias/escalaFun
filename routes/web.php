@@ -43,6 +43,8 @@ Route::post('#', [EscalaController::class, '#'])->name('escalar.remover');
 Route::get('/Funcionario', [FuncionarioController::class, 'lista'])->name('home.lista.funcionario'); //Página onde lista os funcionários
 Route::get('/cadastroFuncionario', [FuncionarioController::class, 'create'])->name('home.cadastro.funcionario'); //Página para cadastro do funcionário
 Route::post('/funcionarios', [FuncionarioController::class, 'store'])->name('funcionario.store'); //Inserção dos dados na tabela
+Route::get('/funcionario/{id}/edit', [FuncionarioController::class, 'edit'])->name('funcionario.edit'); // Página de edição do funcionário
+Route::put('/funcionario/{id}', [FuncionarioController::class, 'update'])->name('funcionario.update'); // Atualizar funcionário existente
 
 /**
  * Rotas Relacionadas a Setor

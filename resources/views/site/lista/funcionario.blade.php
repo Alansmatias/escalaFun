@@ -31,6 +31,7 @@
       <th scope="col">Nome</th>
       <th scope="col">Telefone</th>
       <th scope="col">Contrato</th>
+      <th scope="col">Ação</th>
     </tr>
   </thead>
   <tbody>
@@ -40,6 +41,9 @@
         <td>{{ $funcionario->nome }}</td>
         <td>{{ $funcionario->telefone }}</td>
         <td>{{ $funcionario->contrato }}</td>
+        <td>
+          <a class="btn btn-primary" href="{{ route('funcionario.edit', $funcionario->id) }}" role="button">Editar</a>
+        </td>
       </tr>
     @endforeach
   </tbody>

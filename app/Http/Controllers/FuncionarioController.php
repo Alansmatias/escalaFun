@@ -121,18 +121,85 @@ class FuncionarioController extends Controller
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(Funcionario $funcionario)
+    public function edit($id)
     {
-        //
+        $funcionario = Funcionario::findOrFail($id);
+        $setores = Setor::all();
+        $turnos = Turno::all();
+
+        // Buscar as folgas diretamente no banco
+        $folgasSelecionadas = DB::table('funfolga')
+                                ->where('id_funcionario', $id)
+                                ->pluck('folga')
+                                ->toArray();
+    
+        return view('site.cadastro.funcionario', compact('funcionario', 'setores', 'turnos', 'folgasSelecionadas'));
     }
+    
 
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, Funcionario $funcionario)
+    public function update(Request $request, $id)
     {
-        //
+        // Buscar o funcionário
+        $funcionario = Funcionario::findOrFail($id);
+    
+        // Validação dos dados
+        $validatedData = $request->validate([
+            'nome' => 'required|string|max:255',
+            'telefone' => 'required|string|min:10|max:11',
+            'contrato' => 'required|in:mensalista,intermitente',
+            'domingo' => 'nullable|integer|min:1|max:4',
+            'ativo' => 'required|boolean',
+            'folga' => 'nullable|array',
+            'folga.*' => 'in:dom,seg,ter,qua,qui,sex,sab',
+            'setor' => 'required|array|min:1',
+            'turno' => 'required|array|min:1'
+        ]);
+    
+        // Atualizar os dados do funcionário
+        $funcionario->update([
+            'nome' => $validatedData['nome'],
+            'telefone' => $validatedData['telefone'],
+            'contrato' => $validatedData['contrato'],
+            'domingo' => $validatedData['domingo'] ?? null,
+            'ativo' => $validatedData['ativo'],
+        ]);
+    
+        // Atualizar as folgas - remover antigas e inserir novas
+        DB::table('funfolga')->where('id_funcionario', $id)->delete();
+    
+        if (!empty($validatedData['folga'])) {
+            $novasFolgas = array_map(fn($folga) => [
+                'id_funcionario' => $id,
+                'folga' => $folga
+            ], $validatedData['folga']);
+    
+            DB::table('funfolga')->insert($novasFolgas);
+        }
+    
+        // Atualizar setores - remover antigos e inserir novos
+        DB::table('funsetor')->where('id_funcionario', $id)->delete();
+        $novosSetores = array_map(fn($setor) => [
+            'id_funcionario' => $id,
+            'id_setor' => $setor
+        ], $validatedData['setor']);
+    
+        DB::table('funsetor')->insert($novosSetores);
+    
+        // Atualizar turnos - remover antigos e inserir novos
+        DB::table('funturno')->where('id_funcionario', $id)->delete();
+        $novosTurnos = array_map(fn($turno) => [
+            'id_funcionario' => $id,
+            'id_turno' => $turno
+        ], $validatedData['turno']);
+    
+        DB::table('funturno')->insert($novosTurnos);
+    
+        return redirect()->route('home.lista.funcionario')->with('success', 'Funcionário atualizado com sucesso!');
     }
+    
 
     /**
      * Remove the specified resource from storage.

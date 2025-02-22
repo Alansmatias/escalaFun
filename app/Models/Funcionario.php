@@ -23,6 +23,12 @@ class Funcionario extends Model
         return $this->belongsToMany(Setor::class, 'funsetor', 'id_funcionario', 'id_setor');
     }
 
+    // Relacionamento muitos-para-muitos com Setor
+    public function turnos()
+    {
+        return $this->belongsToMany(Turno::class, 'funturno', 'id_funcionario', 'id_turno');
+    }
+
     // Relacionamento um para muitos com Escala
     public function escalas()
     {
