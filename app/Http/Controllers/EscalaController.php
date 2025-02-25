@@ -64,13 +64,13 @@ class EscalaController extends Controller
 
     
         // Buscar todos os funcionários
-        $funcionarios = Funcionario::all();
+        $funcionarios = Funcionario::orderBy('nome')->get();
     
         // Buscar todos os setores
-        $setores = Setor::all();
+        $setores = Setor::orderBy('nome')->get();
     
         // Buscar todos os turnos
-        $turnos = Turno::all();
+        $turnos = Turno::orderBy('nome')->get();
     
         // Passar os dados para a view
         return view('site.escalarfuncionario', compact('escalaHeaders', 'funcionarios', 'setores', 'turnos'));
