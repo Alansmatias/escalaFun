@@ -32,6 +32,16 @@
 
   <div class="row g-3">
     <div class="col-md-4 mb-3">
+      <label for="sobrenomeFun" class="form-label">Sobrenome</label>
+      <input type="text" class="form-control" name="sobrenome" id="sobrenomeFun" placeholder="Sobrenome do Funcionário" required value="{{ old('sobrenome', $funcionario->sobrenome ?? '') }}">
+      @error('sobrenome')
+        <div class="invalid-feedback">{{ $message }}</div>
+      @enderror
+    </div>
+  </div>
+  
+  <div class="row g-3">
+    <div class="col-md-4 mb-3">
       <label for="telFun" class="form-label">Telefone</label>
       <input type="tel" class="form-control" name="telefone" id="telFun" placeholder="Digite o número de Telefone" pattern="\d{11}" required value="{{ old('telefone', $funcionario->telefone ?? '') }}">
       @error('telefone')

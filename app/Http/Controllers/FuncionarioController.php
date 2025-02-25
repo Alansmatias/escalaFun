@@ -47,13 +47,14 @@ class FuncionarioController extends Controller
     }
 
     /**
-     * Store a newly created resource in storage.
+     * Incluir novo funcionário na tabela.
      */
     public function store(Request $request)
     {
         // Validação dos dados
         $validatedData = $request->validate([
             'nome' => 'required|string|max:255',
+            'sobrenome' => 'nullable|string|max:255',
             'telefone' => 'required|string|min:10|max:11',
             'contrato' => 'required|in:mensalista,intermitente',
             'domingo' => 'nullable|integer|min:1|max:4',
@@ -70,6 +71,7 @@ class FuncionarioController extends Controller
         // Inserção dos dados na tabela
         $funcionario = Funcionario::create([
             'nome' => $validatedData['nome'],
+            'sobrenome' => $validatedData['sobrenome'],
             'telefone' => $validatedData['telefone'],
             'contrato' => $validatedData['contrato'],
             'domingo' => $domingo,
@@ -119,7 +121,7 @@ class FuncionarioController extends Controller
     }
 
     /**
-     * Show the form for editing the specified resource.
+     * Editar um funcionário existente.
      */
     public function edit($id)
     {
@@ -148,6 +150,7 @@ class FuncionarioController extends Controller
         // Validação dos dados
         $validatedData = $request->validate([
             'nome' => 'required|string|max:255',
+            'sobrenome' => 'nullable|string|max:255',
             'telefone' => 'required|string|min:10|max:11',
             'contrato' => 'required|in:mensalista,intermitente',
             'domingo' => 'nullable|integer|min:1|max:4',
@@ -161,6 +164,7 @@ class FuncionarioController extends Controller
         // Atualizar os dados do funcionário
         $funcionario->update([
             'nome' => $validatedData['nome'],
+            'sobrenome' => $validatedData['sobrenome'],
             'telefone' => $validatedData['telefone'],
             'contrato' => $validatedData['contrato'],
             'domingo' => $validatedData['domingo'] ?? null,

@@ -14,6 +14,7 @@ return new class extends Migration
         Schema::create('funcionarios', function (Blueprint $table) {
             $table->bigIncrements('id');
             $table->string ('nome');
+            $table->string ('sobrenome');
             $table->string('telefone');
             $table->enum('contrato', ['mensalista', 'intermitente']);
             $table->tinyInteger('domingo')->nullable();//DIGITAR DENTE 1 A 4
