@@ -54,7 +54,7 @@ class FuncionarioController extends Controller
         // Validação dos dados
         $validatedData = $request->validate([
             'nome' => 'required|string|max:255',
-            'sobrenome' => 'nullable|string|max:255',
+            'nomecompleto' => 'nullable|string|max:255',
             'telefone' => 'required|string|min:10|max:11',
             'contrato' => 'required|in:mensalista,intermitente',
             'domingo' => 'nullable|integer|min:1|max:4',
@@ -71,7 +71,7 @@ class FuncionarioController extends Controller
         // Inserção dos dados na tabela
         $funcionario = Funcionario::create([
             'nome' => $validatedData['nome'],
-            'sobrenome' => $validatedData['sobrenome'],
+            'nomecompleto' => $validatedData['nomecompleto'],
             'telefone' => $validatedData['telefone'],
             'contrato' => $validatedData['contrato'],
             'domingo' => $domingo,
@@ -150,7 +150,7 @@ class FuncionarioController extends Controller
         // Validação dos dados
         $validatedData = $request->validate([
             'nome' => 'required|string|max:255',
-            'sobrenome' => 'nullable|string|max:255',
+            'nomecompleto' => 'nullable|string|max:255',
             'telefone' => 'required|string|min:10|max:11',
             'contrato' => 'required|in:mensalista,intermitente',
             'domingo' => 'nullable|integer|min:1|max:4',
@@ -164,7 +164,7 @@ class FuncionarioController extends Controller
         // Atualizar os dados do funcionário
         $funcionario->update([
             'nome' => $validatedData['nome'],
-            'sobrenome' => $validatedData['sobrenome'],
+            'nomecompleto' => $validatedData['nomecompleto'],
             'telefone' => $validatedData['telefone'],
             'contrato' => $validatedData['contrato'],
             'domingo' => $validatedData['domingo'] ?? null,
@@ -213,3 +213,4 @@ class FuncionarioController extends Controller
         //
     }
 }
+

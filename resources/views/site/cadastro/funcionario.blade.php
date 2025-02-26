@@ -32,9 +32,9 @@
 
   <div class="row g-3">
     <div class="col-md-4 mb-3">
-      <label for="sobrenomeFun" class="form-label">Sobrenome</label>
-      <input type="text" class="form-control" name="sobrenome" id="sobrenomeFun" placeholder="Sobrenome do Funcionário" required value="{{ old('sobrenome', $funcionario->sobrenome ?? '') }}">
-      @error('sobrenome')
+      <label for="nomeCompletoFun" class="form-label">Nome Completo</label>
+      <input type="text" class="form-control" name="nomecompleto" id="nomeCompletoFun" placeholder="Nome Completo do Funcionário" required value="{{ old('nomecompleto', $funcionario->nomecompleto ?? '') }}">
+      @error('nomecompleto')
         <div class="invalid-feedback">{{ $message }}</div>
       @enderror
     </div>

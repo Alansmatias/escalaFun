@@ -9,7 +9,7 @@ class Funcionario extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['nome', 'sobrenome', 'telefone', 'contrato', 'domingo', 'ativo'];
+    protected $fillable = ['nome', 'nomecompleto', 'telefone', 'contrato', 'domingo', 'ativo'];
 
     // Define uma relação "um para muitos" (one-to-many) com FunFolga
     public function funFolgas()
