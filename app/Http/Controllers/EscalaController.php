@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\FunFolga;
 use App\Models\Funcionario;
 use App\Models\Setor;
 use App\Models\Turno;
@@ -354,4 +355,116 @@ class EscalaController extends Controller
     {
         //
     }
+
+    /**
+     * Página de escala automática.
+     */
+    public function escalaautomatica()
+    {
+        $funcionarios = Funcionario::orderBy('nome')->get();
+
+        return view('site.escalaautomatica', compact('funcionarios'));
+    }
+
+    /**
+     *  Gera a escala automática.
+     */
+    public function gerarEscalaAutomatica($funcionarioId = null)
+    {
+        $periodoId = 2; // Ajuste conforme necessário
+        $periodo = Periodo::find($periodoId);
+        if (!$periodo) {
+            return response()->json(['erro' => 'Nenhum período cadastrado'], 400);
+        }
+
+        $dataInicio = Carbon::parse($periodo->dataIni);
+        $dataFim = Carbon::parse($periodo->dataFim);
+
+        // Obtém os setores e turnos do funcionário
+        $setores = DB::table('funSetor')->where('id_funcionario', $funcionarioId)->pluck('id_setor')->toArray();
+        $turnos = DB::table('funTurno')->where('id_funcionario', $funcionarioId)->pluck('id_turno')->toArray();
+
+        // Obtém os dias de folga cadastrados na tabela funFolga
+        $diasFolga = DB::table('funFolga')->where('id_funcionario', $funcionarioId)->pluck('folga')->toArray();
+        
+        // Array para converter os dias da semana para os nomes armazenados na tabela funFolga
+        $diasSemana = [
+            'Sunday'    => 'dom',
+            'Monday'    => 'seg',
+            'Tuesday'   => 'ter',
+            'Wednesday' => 'qua',
+            'Thursday'  => 'qui',
+            'Friday'    => 'sex',
+            'Saturday'  => 'sab',
+        ];
+
+        // Percorre os dias do período
+        for ($data = clone $dataInicio; $data->lte($dataFim); $data->addDay()) {
+            $diaSemana = $data->format('l'); // Nome do dia em inglês (Sunday, Monday, ...)
+            $diaEscala = $diasSemana[$diaSemana] ?? null;
+
+            if (in_array($diaEscala, $diasFolga)) {
+                // Se for um dia de folga, registra como descanso
+                Escala::updateOrCreate(
+                    [
+                        'dia'            => $data->format('Y-m-d'),
+                        'id_funcionario' => $funcionarioId,
+                    ],
+                    [
+                        'id_setor' => $setor,
+                        'id_turno' => $turno,
+                        'status'   => 'D', // Descanso
+                    ]
+                );
+            } else {
+                // Define setor e turno aleatórios para o funcionário
+                $setor = $setores[array_rand($setores)];
+                $turno = $turnos[array_rand($turnos)];
+
+                // Salva a escala no banco de dados
+                Escala::updateOrCreate(
+                    [
+                        'dia'            => $data->format('Y-m-d'),
+                        'id_funcionario' => $funcionarioId,
+                    ],
+                    [
+                        'id_setor' => $setor,
+                        'id_turno' => $turno,
+                        'status'   => 'E', // Escalado
+                    ]
+                );
+            }
+        }
+    }
+    
+
+    public function gerarEscala(Request $request)
+    {
+        // Obtém os funcionários selecionados no formulário
+        $funcionariosSelecionados = $request->input('escalados', []);
+
+        if (empty($funcionariosSelecionados)) {
+            return back()->withErrors(['msg' => 'Selecione pelo menos um funcionário para gerar a escala.']);
+        }
+
+        // Obtém o período atual (último cadastrado)
+        $periodo = Periodo::latest('id')->first();
+        
+        if (!$periodo) {
+            return back()->withErrors(['msg' => 'Nenhum período encontrado.']);
+        }
+
+        $dataInicio = Carbon::parse($periodo->dataIni);
+        $dataFim = Carbon::parse($periodo->dataFim);
+
+        // Gera a escala para cada funcionário selecionado
+        foreach ($funcionariosSelecionados as $funcionarioId) {
+            $this->gerarEscalaAutomatica($funcionarioId, $dataInicio, $dataFim);
+        }
+
+        return back()->with('success', 'Escala gerada com sucesso!');
+    }
+
+
+
 }

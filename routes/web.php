@@ -34,6 +34,8 @@ Route::get('/escalarFuncionario', [EscalaController::class, 'escalar'])->name('e
 Route::post('/escalar/salvar', [EscalaController::class, 'store'])->name('escalar.salvar'); //Salvar registro na tabela do banco
 Route::post('/escalar/atualizar', [EscalaController::class, 'update'])->name('escalar.atualizar');
 Route::post('#', [EscalaController::class, '#'])->name('escalar.remover');
+Route::get('/escala/automatica', [EscalaController::class, 'escalaautomatica'])->name('escala.automatica'); //Escala automatica
+Route::post('/gerar-escala', [EscalaController::class, 'gerarEscala'])->name('escala.gerar');
 
 
 
