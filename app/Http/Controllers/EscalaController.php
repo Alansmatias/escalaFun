@@ -437,7 +437,9 @@ class EscalaController extends Controller
         }
     }
     
-
+    /**
+     *  Gera a escala automática.
+     */
     public function gerarEscala(Request $request)
     {
         // Obtém os funcionários selecionados no formulário
@@ -465,6 +467,15 @@ class EscalaController extends Controller
         return back()->with('success', 'Escala gerada com sucesso!');
     }
 
+    /**
+     * Página para registrar ausencia do funcionário.
+     */
+    public function registrarAusencia()
+    {
+        $funcionarios = Funcionario::orderBy('nome')->get();
+        $setores = Setor::orderBy('nome')->get();
+        $turnos = Turno::orderBy('nome')->get();
 
-
+        return view('site.registrarAusencia', compact('funcionarios', 'setores', 'turnos'));
+    }
 }

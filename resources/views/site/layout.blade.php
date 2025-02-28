@@ -170,6 +170,14 @@
               Escala Automática
               </a>
           </div>
+          <div class="list-group ps-3">
+              <a class="list-group-item list-group-item-action text-white bg-dark border-0" href="{{route('escala.ausencia')}}">
+              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-calendar-x me-2" viewBox="0 0 16 16">
+              <path d="M6.146 1.428a.5.5 0 0 0-.708 0l-5 5a.5.5 0 0 0 .708.708L8 1.707l4.146 4.147a.5.5 0 0 0 .708-.708L10.293 1 6.146 1.428zm-3.5 8.5a.5.5 0 0 1 .5-.5h4a.5.5 0 0 1 0 1h-4a.5.5 0 0 1-.5-.5z"/>
+              </svg>
+              Registrar Ausência
+              </a>
+          </div>
         </div>
       </li>
       <li>
