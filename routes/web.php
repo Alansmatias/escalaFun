@@ -23,7 +23,7 @@ use App\Http\Controllers\RelatorioController;
  * Rota Inicial - Página Home
  */
 Route::get('/', function () {
-    return view('site/home');
+    return view('site.home');
 })->name('home');
 
 /**
@@ -71,4 +71,7 @@ Route::put('/turno/{id}', [TurnoController::class, 'update'])->name('turno.updat
 /**
  * Rotas Relacionadas a Relatório
  */
+Route::get('/relatorio/home', function () {
+    return view('site.relatorios.home');
+})->name('relatorio.home');
 Route::get('/funcionarios_escalados_setor_turno', [RelatorioController::class, 'funcionarios_escalados_setor_turno'])->name('funcionarios_escalados_setor_turno');

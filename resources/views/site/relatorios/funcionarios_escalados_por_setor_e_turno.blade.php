@@ -5,7 +5,7 @@
 
 <!-- Filtro e Gerar Relatório -->
 <form class="row g-3" method="GET" action="{{ route('funcionarios_escalados_setor_turno') }}">
-    @csrf
+
     <div class="col-md-3 mb-3">
         <label for="setor" class="form-label">Setor</label>
         <select class="form-select" name="setor" id="setor">
