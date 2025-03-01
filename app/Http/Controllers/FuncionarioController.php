@@ -40,7 +40,7 @@ class FuncionarioController extends Controller
 
     public function lista() //listar funcionários e mostrar na lista
     {
-        $funcionarios = Funcionario::all();
+        $funcionarios = Funcionario::orderBy('nome')->get();
 
         return view('site/lista/funcionario', compact('funcionarios'));
         

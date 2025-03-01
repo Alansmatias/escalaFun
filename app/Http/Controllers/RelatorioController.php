@@ -32,7 +32,7 @@ class RelatorioController extends Controller
             ->select(
                 DB::raw("DATE_FORMAT(a.dia, '%d-%m-%Y') AS data"), // Formata a data como dd-mm-yyyy
                 DB::raw("DAYNAME(a.dia) AS dia_semana"),
-                DB::raw("GROUP_CONCAT(b.nome ORDER BY b.nome SEPARATOR '; ') AS funcionarios")
+                DB::raw("GROUP_CONCAT(b.nomecompleto ORDER BY b.nome SEPARATOR '; ') AS funcionarios")
             )
             ->whereBetween('a.dia', [$dataInicio, $dataFim]) // Filtro direto na coluna a.dia
             ->where('a.status', '=', 'E')

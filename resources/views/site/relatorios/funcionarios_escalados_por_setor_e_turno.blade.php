@@ -77,8 +77,8 @@
             data: formattedData,
             layout: "fitColumns",
             printAsHtml: true,
-            printHeader:"<h1>Example Table Header<h1>",
-            printFooter:"<h2>Example Table Footer<h2>",
+            printHeader:"<h3>Escalados no periodo setor: {{ $setores->where('id', request('setor'))->first()->nome ?? 'Todos' }} turno: {{ $turnos->where('id', request('turno'))->first()->nome ?? 'Todos' }}<h3>",
+            // printFooter:"<h2>Example Table Footer<h2>",
             columns: [
                 { title: "Data", field: "data", hozAlign: "center" },
                 { title: "Dia da Semana", field: "dia_semana", hozAlign: "center" },
