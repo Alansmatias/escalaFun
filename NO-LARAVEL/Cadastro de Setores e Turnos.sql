@@ -20,3 +20,8 @@ VALUES
 ('Serviços Gerais', '1'),
 ('Escritório', '1'),
 ('Padaria Auxiliar', '1');
+
+INSERT INTO `laravel`.`turnos` (`nome`, `ativo`) 
+VALUES
+('Manha', '1'),
+('Tarde', '1');
