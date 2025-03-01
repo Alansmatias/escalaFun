@@ -25,3 +25,5 @@ INSERT INTO `laravel`.`turnos` (`nome`, `ativo`)
 VALUES
 ('Manha', '1'),
 ('Tarde', '1');
+
+INSERT INTO `laravel`.`periodos` (`id`, `dataIni`, `dataFim`) VALUES ('2', '2025-03-01', '2025-03-31');
