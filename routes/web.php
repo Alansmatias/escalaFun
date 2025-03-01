@@ -37,6 +37,7 @@ Route::post('#', [EscalaController::class, '#'])->name('escalar.remover');
 Route::get('/escala/automatica', [EscalaController::class, 'escalaautomatica'])->name('escala.automatica'); //Escala automatica
 Route::post('/gerar-escala', [EscalaController::class, 'gerarEscala'])->name('escala.gerar'); //salva Escala automatica
 Route::get('/escala/ausencia', [EscalaController::class, 'registrarAusencia'])->name('escala.ausencia');
+Route::post('/ausencia/salvar', [EscalaController::class, 'salvarAusencia'])->name('ausencia.salvar');
 
 
 

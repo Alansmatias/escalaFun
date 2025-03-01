@@ -20,7 +20,7 @@
 
 @section('conteudo')
     <h1>Registrar Ausência</h1><br>
-    <form class="row g-3" method="GET" action="{{ route('funcionarios_escalados_setor_turno') }}">
+    <form class="row g-3" method="POST" action="{{ route('ausencia.salvar') }}">
         @csrf
         <div class="col-md-4 mb-3">
             <label for="funcionario" class="form-label">Funcionario</label>

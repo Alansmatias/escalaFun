@@ -119,6 +119,8 @@
                                     $buttonClass = 'btn-warning';
                                 } elseif ($status === 'F') {
                                     $buttonClass = 'btn-danger';
+                                } elseif ($status === 'A') {
+                                    $buttonClass = 'btn-info';
                                 }
                             @endphp
                             @php
@@ -133,14 +135,15 @@
                             @endphp
 
                             <button type="button" class="btn {{ $buttonClass }} statusButton"
-                                    data-status="{{ $status }}"
-                                    data-dia="{{ $header['day'] }}"
-                                    data-funcionario="{{ $funcionarioId }}"
-                                    data-setor-turno="{{ $setorTurno }}"
-                                    {{ $bloqueado ? 'disabled' : '' }}
-                                    onclick="toggleStatus(this)">
-                                {{ $bloqueado ? 'X' : $status }}
-                            </button>
+                                data-status="{{ $status }}"
+                                data-dia="{{ $header['day'] }}"
+                                data-funcionario="{{ $funcionarioId }}"
+                                data-setor-turno="{{ $setorTurno }}"
+                                data-observacao="{{ $escala ? $escala->observacao : 'Nenhuma observação disponível' }}"
+                                {{ $bloqueado ? 'disabled' : '' }}
+                                onclick="toggleStatus(this)">
+                            {{ $bloqueado ? 'X' : $status }}
+                        </button>
                             <input type="hidden" name="status[{{ $escalasGrupo->first()->funcionario->id }}-{{ $escalasGrupo->first()->setor->id }}-{{ $escalasGrupo->first()->turno->id }}][{{ $header['day'] }}]" value="{{ $status }}">
                         </td>
                     @endforeach
@@ -168,6 +171,17 @@
         };
 
         let currentStatus = button.getAttribute("data-status");
+
+        // Se for 'A', exibe o modal com a observação
+        if (currentStatus === "A") {
+            let observacao = button.getAttribute("data-observacao");
+            document.getElementById("observacaoTexto").textContent = observacao;
+            let modal = new bootstrap.Modal(document.getElementById("observacaoModal"));
+            modal.show();
+            return;
+        }
+
+        // Alternar status normalmente
         let nextIndex = (statuses.indexOf(currentStatus) + 1) % statuses.length;
         let nextStatus = statuses[nextIndex];
 
@@ -179,4 +193,21 @@
     }
 </script>
 
+<!-- Modal de Observação -->
+<div class="modal fade" id="observacaoModal" tabindex="-1" aria-labelledby="observacaoModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="observacaoModalLabel">Observação</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fechar"></button>
+            </div>
+            <div class="modal-body">
+                <p id="observacaoTexto">Nenhuma observação disponível.</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fechar</button>
+            </div>
+        </div>
+    </div>
+</div>
 @endsection

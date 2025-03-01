@@ -235,25 +235,9 @@ class EscalaController extends Controller
     
         return view('site.escala', compact('escalaHeaders', 'escalas', 'bloqueios', 'funcionarios', 'setores', 'turnos'));
     }
-        
-    /**
-     * Display the specified resource.
-     */
-    public function show(Escala $escala)
-    {
-        //
-    }
 
     /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(Escala $escala)
-    {
-        //
-    }
-
-    /**
-     * Update the specified resource in storage.
+     * Atualiza os dados da escala da pagina regenciar escalas.
      */
     public function update(Request $request)
     {
@@ -264,7 +248,7 @@ class EscalaController extends Controller
             'funcionario.*' => 'required|exists:funcionarios,id',
             'setor.*' => 'required|exists:setors,id',
             'turno.*' => 'required|exists:turnos,id',
-            'status.*.*' => 'required|in:E,D,F,#',
+            'status.*.*' => 'required|in:E,D,F,#,A',
         ]);
     
         // Obter o ID do período (fixo ou enviado pelo formulário)
@@ -313,6 +297,11 @@ class EscalaController extends Controller
                     ->where('dia', $date)
                     ->whereBetween('dia', [$periodo->dataIni, $periodo->dataFim])
                     ->first();
+                
+                // Se o funcionário já estiver com status 'A' (Ausente), não atualiza
+                if ($escala && $escala->status === 'A') {
+                    continue;
+                }
         
                 if ($escala) {
                     DB::table('escalas')
@@ -347,14 +336,6 @@ class EscalaController extends Controller
     
         return redirect()->back()->with('success', 'Escala atualizada com sucesso!');
     }    
-
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(Escala $escala)
-    {
-        //
-    }
 
     /**
      * Página de escala automática.
@@ -477,5 +458,46 @@ class EscalaController extends Controller
         $turnos = Turno::orderBy('nome')->get();
 
         return view('site.registrarAusencia', compact('funcionarios', 'setores', 'turnos'));
+    }
+
+    /**
+     * Salva a ausência do funcionário.
+     */
+    public function salvarAusencia(Request $request)
+    {
+        $request->validate([
+            'funcionario' => 'required|exists:funcionarios,id',
+            'setor' => 'required|exists:setors,id',
+            'turno' => 'required|exists:turnos,id',
+            'dataInicio' => 'required|date',
+            'dataFim' => 'required|date|after_or_equal:dataInicio',
+            'motivo' => 'required|string|max:255',
+        ]);
+
+        $dataInicio = Carbon::parse($request->dataInicio);
+        $dataFim = Carbon::parse($request->dataFim);
+
+        DB::beginTransaction();
+        try {
+            for ($data = clone $dataInicio; $data->lte($dataFim); $data->addDay()) {
+                Escala::updateOrCreate(
+                    [
+                        'dia' => $data->format('Y-m-d'),
+                        'id_funcionario' => $request->funcionario,
+                    ],
+                    [
+                        'id_setor' => $request->setor,
+                        'id_turno' => $request->turno,
+                        'status' => 'A', // Ausente
+                        'observacao' => $request->motivo,
+                    ]
+                );
+            }
+            DB::commit();
+            return redirect()->back()->with('success', 'Ausência registrada com sucesso!');
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return redirect()->back()->withErrors(['erro' => 'Erro ao registrar ausência: ' . $e->getMessage()]);
+        }
     }
 }
