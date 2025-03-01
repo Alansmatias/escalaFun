@@ -28,6 +28,9 @@ return new class extends Migration
 
             $table->enum('status', ['E', 'F', 'D', 'A']); //ESCALADO, FOLGA, DESCANÇO, AUSENTE
 
+            //Cuidado modificar aqui deverá alterar também na controller escalas e outros formulários
+            $table->enum('tipoAuse', ['FERIAS', 'LISENCA', 'ATESTADO', 'OUTROS'])->nullable();
+
             $table->string ('observacao')->nullable();
 
             $table->timestamps();

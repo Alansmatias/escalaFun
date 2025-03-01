@@ -472,6 +472,7 @@ class EscalaController extends Controller
             'dataInicio' => 'required|date',
             'dataFim' => 'required|date|after_or_equal:dataInicio',
             'motivo' => 'required|string|max:255',
+            'tipoAuse' => 'required|in:FERIAS,LISENCA,ATESTADO,OUTROS',
         ]);
 
         $dataInicio = Carbon::parse($request->dataInicio);
@@ -490,6 +491,7 @@ class EscalaController extends Controller
                         'id_turno' => $request->turno,
                         'status' => 'A', // Ausente
                         'observacao' => $request->motivo,
+                        'tipoAuse' => $request->tipoAuse,
                     ]
                 );
             }

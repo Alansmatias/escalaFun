@@ -22,9 +22,22 @@
     <h1>Registrar Ausência</h1><br>
     <form class="row g-3" method="POST" action="{{ route('ausencia.salvar') }}">
         @csrf
+
+        <div class="col-md-12 mb-3">
+            <label for="tipoAusencia" class="form-label">Tipo de Ausência</label>
+            <select class="form-select w-25" name="tipoAuse" id="tipoAuse" required>
+                <!-- Tipo de Ausência de acordo com enum da tabela escala -->
+                <option selected disabled value="">Selecione o Tipo de Ausência</option>
+                <option value="ATESTADO">ATESTADO</option>
+                <option value="FERIAS">FERIAS</option>
+                <option value="LISENCA">LISENCA</option>
+                <option value="OUTROS">OUTROS</option>
+            </select>
+        </div>
+
         <div class="col-md-4 mb-3">
             <label for="funcionario" class="form-label">Funcionario</label>
-            <select class="form-select" name="funcionario" id="funcionario">
+            <select class="form-select" name="funcionario" id="funcionario" required>
                 <option selected disabled value="">Selecione o Funcionário</option>
                 @foreach($funcionarios as $funcionario)
                     <option value="{{ $funcionario->id }}">
@@ -36,7 +49,7 @@
 
         <div class="col-md-3 mb-3">
             <label for="setor" class="form-label">Setor</label>
-            <select class="form-select" name="setor" id="setor">
+            <select class="form-select" name="setor" id="setor" required>
                 <option selected disabled value="">Selecione o Setor</option>
                 @foreach($setores as $setor)
                     <option value="{{ $setor->id }}">
@@ -48,7 +61,7 @@
 
         <div class="col-md-3 mb-3">
             <label for="turno" class="form-label">Turno</label>
-            <select class="form-select" name="turno" id="turno">
+            <select class="form-select" name="turno" id="turno" required>
                 <option selected disabled value="">Selecione o Turno</option>
                 @foreach($turnos as $turno)
                     <option value="{{ $turno->id }}">
@@ -60,17 +73,17 @@
 
         <div class="col-md-3 mb-3">
             <label for="dataInicio" class="form-label">Data Inicial</label>
-            <input type="date" class="form-control" name="dataInicio" id="dataInicio" value="#">
+            <input type="date" class="form-control" name="dataInicio" id="dataInicio" value="#" required>
         </div>
 
         <div class="col-md-3 mb-3">
             <label for="dataFim" class="form-label">Data Final</label>
-            <input type="date" class="form-control" name="dataFim" id="dataFim" value="#">
+            <input type="date" class="form-control" name="dataFim" id="dataFim" value="#"  required>
         </div>
 
         <div class="col-md-12 mb-3">
             <label for="motivo" class="form-label">Motivo</label>
-            <textarea class="form-control" name="motivo" id="motivo" rows="3"></textarea>
+            <textarea class="form-control" name="motivo" id="motivo" rows="3"></textarea required>
         </div>
 
         <div class="col-12">
