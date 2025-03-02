@@ -13,6 +13,9 @@
         <tr>
             <td><a style="text-decoration: none;" href="{{route('funcionarios_escalados_setor_turno')}}">Funcionários Escalados Por Setor e Turno</a></td>
         </tr>
+        <tr>
+            <td><a style="text-decoration: none;" href="{{route('escala_da_semana')}}">Escala da Semana</a></td>
+        </tr>
     </tbody>
 </table>
 

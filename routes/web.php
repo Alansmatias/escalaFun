@@ -74,4 +74,5 @@ Route::put('/turno/{id}', [TurnoController::class, 'update'])->name('turno.updat
 Route::get('/relatorio/home', function () {
     return view('site.relatorios.home');
 })->name('relatorio.home');
-Route::get('/funcionarios_escalados_setor_turno', [RelatorioController::class, 'funcionarios_escalados_setor_turno'])->name('funcionarios_escalados_setor_turno');
+Route::get('relatorio/funcionarios_escalados_setor_turno', [RelatorioController::class, 'funcionarios_escalados_setor_turno'])->name('funcionarios_escalados_setor_turno');
+Route::get('relatorio/escala_da_semana', [RelatorioController::class, 'escala_da_semana'])->name('escala_da_semana');
