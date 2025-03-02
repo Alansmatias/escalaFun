@@ -32,12 +32,12 @@
 
     <div class="col-md-3 mb-3">
         <label for="dataInicio" class="form-label">Data Inicial</label>
-        <input type="date" class="form-control" name="dataInicio" id="dataInicio" value="{{ request('dataInicio') }}">
+        <input type="date" class="form-control" name="dataInicio" id="dataInicio" value="{{ request('dataInicio') }}" required>
     </div>
 
     <div class="col-md-3 mb-3">
         <label for="dataFim" class="form-label">Data Final</label>
-        <input type="date" class="form-control" name="dataFim" id="dataFim" value="{{ request('dataFim') }}">
+        <input type="date" class="form-control" name="dataFim" id="dataFim" value="{{ request('dataFim') }}" required>
     </div>
 
     <div class="col-12">
@@ -96,7 +96,7 @@
         document.getElementById("download-pdf").addEventListener("click", function(){
             tabela.download("pdf", "data.pdf", {
                 orientation:"portrait", //set page orientation to portrait
-                title:"Example Report", //add title to report
+                title:"Escalados no periodo setor: {{ $setores->where('id', request('setor'))->first()->nome ?? 'Todos' }} turno: {{ $turnos->where('id', request('turno'))->first()->nome ?? 'Todos' }}", //add title to report
             });
         });
     });
