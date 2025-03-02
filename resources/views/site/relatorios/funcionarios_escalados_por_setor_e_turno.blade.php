@@ -51,7 +51,7 @@
 <div id="tabela-escalas"></div>
 <div>
     <button class="btn btn-outline-secondary mt-2" id="print-table">Imprimir</button>
-    <button class="btn btn-outline-secondary mt-2" id="#">Salvar Xls</button>
+    <button class="btn btn-outline-secondary mt-2" id="download-pdf">Salvar PDF</button>
 </div>
 
 <script>
@@ -91,6 +91,13 @@
         //print button
         document.getElementById("print-table").addEventListener("click", function(){
             tabela.print(false, true);
+        });
+
+        document.getElementById("download-pdf").addEventListener("click", function(){
+            tabela.download("pdf", "data.pdf", {
+                orientation:"portrait", //set page orientation to portrait
+                title:"Example Report", //add title to report
+            });
         });
     });
 </script>
