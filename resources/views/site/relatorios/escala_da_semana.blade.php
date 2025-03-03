@@ -87,7 +87,7 @@
             data: formattedData,
             layout: "fitColumns",
             printAsHtml: true,
-            printHeader: `<h3>Escala da Semana</h3>`,
+            printHeader: `<h3>Escala da Semana Turno: {{ $turnos->where('id', request('turno'))->first()->nome ?? 'Todos' }} Setor: {{ $setores->where('id', request('setor'))->first()->nome ?? 'Todos' }}</h3>`,
             columns: columns
         });
 
@@ -102,7 +102,7 @@
         document.getElementById("download-pdf").addEventListener("click", function () {
             tabela.download("pdf", "escala-semanal.pdf", {
                 orientation: "portrait",
-                title: "Escala da Semana",
+                title: "Escala da Semana Turno: {{ $turnos->where('id', request('turno'))->first()->nome ?? 'Todos' }} Setor: {{ $setores->where('id', request('setor'))->first()->nome ?? 'Todos' }}",
             });
         });
     });
