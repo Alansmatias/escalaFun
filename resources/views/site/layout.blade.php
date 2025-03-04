@@ -124,9 +124,9 @@
   </symbol>
 </svg>
 
-<main class="d-flex flex-nowrap">
+<main class="d-flex flex-nowrap" style="height: 100dvh;">
   <h1 class="visually-hidden">Sidebars examples</h1>
-  <div class="d-flex flex-column flex-shrink-0 p-3 text-bg-dark vh-100 menuesconde" style="width: 280px;" id="menu-principal">
+  <div class="d-flex flex-column flex-shrink-0 p-3 text-bg-dark menuesconde" style="width: 280px;" id="menu-principal">
     <a href="#" class="d-flex align-items-center mb-3 mb-md-0 me-md-auto text-white text-decoration-none">
       <svg class="bi pe-none me-2" width="40" height="32"><use xlink:href="#bootstrap"/></svg>
       <span class="fs-4">Escala Pão da Vida</span>
@@ -227,17 +227,20 @@
     <hr>
     <div class="dropdown">
       <a href="#" class="d-flex align-items-center text-white text-decoration-none dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
-        <img src="https://github.com/mdo.png" alt="" width="32" height="32" class="rounded-circle me-2">
-        <strong>mdo</strong>
+          <i class="fa-solid fa-user rounded-circle me-2" width="32" height="32"></i>
+          <strong>{{ Auth::user()->name ?? 'Usuário' }}</strong>
       </a>
       <ul class="dropdown-menu dropdown-menu-dark text-small shadow">
-        <li><a class="dropdown-item" href="#">New project...</a></li>
-        <li><a class="dropdown-item" href="#">Settings</a></li>
-        <li><a class="dropdown-item" href="#">Profile</a></li>
-        <li><hr class="dropdown-divider"></li>
-        <li><a class="dropdown-item" href="#">Sign out</a></li>
+          <li><a class="dropdown-item" href="{{ route('profile.edit') }}">Perfil</a></li>
+          <li><hr class="dropdown-divider"></li>
+          <li>
+              <form method="POST" action="{{ route('logout') }}">
+                  @csrf
+                  <button type="submit" class="dropdown-item">Sair</button>
+              </form>
+          </li>
       </ul>
-    </div>
+  </div>
   </div>
     <div class="container vh-100 overflow-auto">
     <div class="menumostra d-none"><a id="botao-menu" class="btn btn-dark" href="#" role="button"><svg class="bi pe-none me-2" width="30" height="30"><use xlink:href="#bi-list"/></svg></a></div>
@@ -254,6 +257,8 @@
 <script type="text/javascript" src="https://unpkg.com/tabulator-tables@6.3.1/dist/js/tabulator.min.js"></script>
 <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.4.0/jspdf.umd.min.js"></script>
 <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.20/jspdf.plugin.autotable.min.js"></script>
+<!-- Font Awesome -->
+<script src="https://kit.fontawesome.com/791479aa38.js" crossorigin="anonymous"></script>
 
 <script>
   document.getElementById("botao-menu").addEventListener("click", function (event) {

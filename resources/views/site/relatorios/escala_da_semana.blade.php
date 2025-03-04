@@ -77,7 +77,7 @@
 
         // Criar colunas dinâmicas para cada dia
         var columns = escalaHeaders.map(header => ({
-            title: `${header.dayName}<br>(${header.day.split('-').reverse().join('-')})`, // Exibe "Seg (01-03-2025)"
+            title: `${header.dayName}\n(${header.day.split('-').reverse().join('-')})`, // Exibe "Seg (01-03-2025)"
             //title: header.dayName, // Nome do dia ex: "Seg", "Ter"
             field: header.day, // Data no formato YYYY-MM-DD
             hozAlign:"center",
