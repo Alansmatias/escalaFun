@@ -481,20 +481,23 @@ class EscalaController extends Controller
         DB::beginTransaction();
         try {
             for ($data = clone $dataInicio; $data->lte($dataFim); $data->addDay()) {
-                Escala::updateOrCreate(
-                    [
-                        'dia' => $data->format('Y-m-d'),
-                        'id_funcionario' => $request->funcionario,
-                    ],
-                    [
-                        'id_setor' => $request->setor,
-                        'id_turno' => $request->turno,
-                        'status' => 'A', // Ausente
-                        'observacao' => $request->motivo,
-                        'tipoAuse' => $request->tipoAuse,
-                    ]
-                );
+                // Remover qualquer escala existente do funcionário para este dia
+                Escala::where('dia', $data->format('Y-m-d'))
+                    ->where('id_funcionario', $request->funcionario)
+                    ->delete();
+
+                // Criar a nova entrada da ausência
+                Escala::create([
+                    'dia' => $data->format('Y-m-d'),
+                    'id_funcionario' => $request->funcionario,
+                    'id_setor' => $request->setor,
+                    'id_turno' => $request->turno,
+                    'status' => 'A', // Ausente
+                    'observacao' => $request->motivo,
+                    'tipoAuse' => $request->tipoAuse,
+                ]);
             }
+
             DB::commit();
             return redirect()->back()->with('success', 'Ausência registrada com sucesso!');
         } catch (\Exception $e) {

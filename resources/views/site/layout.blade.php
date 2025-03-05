@@ -242,7 +242,7 @@
       </ul>
   </div>
   </div>
-    <div class="container vh-100 overflow-auto">
+    <div class="container overflow-auto" style="height: 100dvh;">
     <div class="menumostra d-none"><a id="botao-menu" class="btn btn-dark" href="#" role="button"><svg class="bi pe-none me-2" width="30" height="30"><use xlink:href="#bi-list"/></svg></a></div>
     @yield('conteudo')
     </div>

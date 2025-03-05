@@ -96,7 +96,8 @@ class RelatorioController extends Controller
         $escalasDB = DB::table('escalas as e')
             ->join('funcionarios as f', 'e.id_funcionario', '=', 'f.id')
             ->select('e.dia', 'f.nome as funcionario')
-            ->whereBetween('e.dia', [$dataInicio, $dataFim]);
+            ->whereBetween('e.dia', [$dataInicio, $dataFim])
+            ->where('e.status', '=', 'E');
     
         if ($setorId) {
             $escalasDB->where('e.id_setor', $setorId);
