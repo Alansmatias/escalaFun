@@ -62,9 +62,9 @@
     </div>
 </form>
 
-<form class="row g-3 overflow-auto" method="POST" action="{{ route('escalar.atualizar') }}">
+<form class="row g-3" method="POST" action="{{ route('escalar.atualizar') }}">
     @csrf
-    <table class="table">
+    <table class="table row g-3 overflow-auto">
         <!-- Cabeçalho da tabela -->
         <thead>
             <tr>
@@ -157,6 +157,7 @@
 
     <div class="col-12 mb-3">
         <button class="btn btn-primary" type="submit">Atualizar Escala</button>
+        <a href="{{route('escalarfun')}}" class="btn btn-primary"><i class="fa-solid fa-plus"></i> Adicionar Funcionário</a>
     </div>
 </form>
 
