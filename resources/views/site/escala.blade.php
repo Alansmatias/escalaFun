@@ -58,7 +58,7 @@
 
     <!-- Botão de Filtrar -->
     <div class="col-12 mb-3">
-        <button class="btn btn-primary" type="submit">Filtrar</button>
+        <button class="btn btn-primary" type="submit"><i class="fa-solid fa-filter"></i> Filtrar</button>
     </div>
 </form>
 
@@ -156,8 +156,8 @@
     </table>
 
     <div class="col-12 mb-3">
-        <button class="btn btn-primary" type="submit">Atualizar Escala</button>
-        <a href="{{route('escalarfun')}}" class="btn btn-primary"><i class="fa-solid fa-plus"></i> Adicionar Funcionário</a>
+        <button class="btn btn-primary mt-2" type="submit"><i class="fa-solid fa-check"></i> Atualizar Escala</button>
+        <a href="{{route('escalarfun')}}" class="btn btn-primary mt-2"><i class="fa-solid fa-plus"></i> Adicionar Funcionário</a>
     </div>
 </form>
 
