@@ -1,4 +1,4 @@
-INSERT INTO `laravel`.`setors` (`nome`, `ativo`) 
+INSERT INTO `pvrhdb`.`setors` (`nome`, `ativo`) 
 VALUES
 ('Almoxarifado', '1'),
 ('Assadeiras', '1'),
@@ -22,9 +22,9 @@ VALUES
 ('Supervisor Buffet', '1'),
 ('Venda Externa', '1');
 
-INSERT INTO `laravel`.`turnos` (`nome`, `ativo`) 
+INSERT INTO `pvrhdb`.`turnos` (`nome`, `ativo`) 
 VALUES
 ('Manha', '1'),
 ('Tarde', '1');
 
-INSERT INTO `laravel`.`periodos` (`id`, `dataIni`, `dataFim`) VALUES ('2', '2025-03-01', '2025-03-31');
+INSERT INTO `pvrhdb`.`periodos` (`id`, `dataIni`, `dataFim`) VALUES ('2', '2025-03-01', '2025-03-31');

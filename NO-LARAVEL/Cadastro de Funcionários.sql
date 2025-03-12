@@ -1,4 +1,4 @@
-INSERT INTO `laravel`.`funcionarios` (`nome`, `nomecompleto`, `telefone`, `contrato`, `ativo`) 
+INSERT INTO `pvrhdb`.`funcionarios` (`nome`, `nomecompleto`, `telefone`, `contrato`, `ativo`) 
 VALUES
 ('ADAILSON', 'ADAILSON GONCALVES DE LIMA', '00000000000', 'mensalista', '1'),
 ('AILTON', 'AILTON ARAGAO DOS SANTOS', '00000000000', 'mensalista', '1'),
