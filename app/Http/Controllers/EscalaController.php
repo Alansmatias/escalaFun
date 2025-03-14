@@ -229,9 +229,9 @@ class EscalaController extends Controller
             }
         }
     
-        $funcionarios = Funcionario::all();
-        $setores = Setor::all();
-        $turnos = Turno::all();
+        $funcionarios = Funcionario::orderBy('nome')->get();
+        $setores = Setor::orderBy('nome')->get();
+        $turnos = Turno::orderBy('nome')->get();
     
         return view('site.escala', compact('escalaHeaders', 'escalas', 'bloqueios', 'funcionarios', 'setores', 'turnos'));
     }
