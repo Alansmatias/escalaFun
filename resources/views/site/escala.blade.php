@@ -65,8 +65,9 @@
 <form class="row g-3" method="POST" action="{{ route('escalar.atualizar') }}">
     @csrf
     <table class="table row g-3 overflow-auto">
-        <!-- Cabeçalho da tabela -->
-        <thead>
+        <!-- Corpo da tabela -->
+        <tbody>
+            <!-- Cabeçalho da tabela -->
             <tr>
                 <th scope="col">Funcionário</th>
                 <th scope="col">Setor</th>
@@ -80,10 +81,6 @@
                 @endif
                 <th scope="col">Ações</th>
             </tr>
-        </thead>
-
-        <!-- Corpo da tabela -->
-        <tbody>
         @foreach($escalas as $key => $escalasGrupo)
             <tr data-funcionario-id="{{ $escalasGrupo->first()->funcionario->id }}">
                 <!-- Nome do Funcionário -->
