@@ -150,7 +150,7 @@ class EscalaController extends Controller
             return redirect()->back()->withErrors(['error' => $erros]);
         }
     
-        return redirect()->route('escalarfun')->with('success', 'Escala salva com sucesso!');
+        return redirect()->route('escala')->with('success', 'Escala salva com sucesso!');
     }
 
     /**
