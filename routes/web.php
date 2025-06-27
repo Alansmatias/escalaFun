@@ -5,6 +5,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\FuncionarioController;
 use App\Http\Controllers\SetorController;
 use App\Http\Controllers\TurnoController;
+use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\EscalaController;
 use App\Http\Controllers\RelatorioController;
 use App\Http\Controllers\EscalaIAController;
@@ -25,9 +26,7 @@ Route::middleware('auth')->group(function () { //middleware de autenticação
     /**
      * Rota Inicial - Página Home
      */
-    Route::get('/', function () {
-        return view('site.home');
-    })->name('home');
+    Route::get('/', [DashboardController::class, 'index'])->name('home');
 
 
     /**
