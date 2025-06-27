@@ -7,6 +7,7 @@ use App\Http\Controllers\SetorController;
 use App\Http\Controllers\TurnoController;
 use App\Http\Controllers\EscalaController;
 use App\Http\Controllers\RelatorioController;
+use App\Http\Controllers\EscalaIAController;
 
 
 /*
@@ -24,7 +25,6 @@ Route::middleware('auth')->group(function () { //middleware de autenticação
     /**
      * Rota Inicial - Página Home
      */
-
     Route::get('/', function () {
         return view('site.home');
     })->name('home');
@@ -38,10 +38,11 @@ Route::middleware('auth')->group(function () { //middleware de autenticação
     Route::post('/escalar/salvar', [EscalaController::class, 'store'])->name('escalar.salvar'); //Salvar registro na tabela do banco
     Route::post('/escalar/atualizar', [EscalaController::class, 'update'])->name('escalar.atualizar');
     Route::post('#', [EscalaController::class, '#'])->name('escalar.remover');
-    Route::get('/escala/automatica', [EscalaController::class, 'escalaautomatica'])->name('escala.automatica'); //Escala automatica
-    Route::post('/gerar-escala', [EscalaController::class, 'gerarEscala'])->name('escala.gerar'); //salva Escala automatica
+    Route::post('/selecionar-periodo', [PeriodoController::class, 'selecionarPeriodo'])->name('periodo.selecionar');
     Route::get('/escala/ausencia', [EscalaController::class, 'registrarAusencia'])->name('escala.ausencia');
     Route::post('/ausencia/salvar', [EscalaController::class, 'salvarAusencia'])->name('ausencia.salvar');
+    Route::get('/escala/ia', [EscalaIAController::class, 'index'])->name('escala.ia');
+    Route::post('/escala/ia/gerar', [EscalaIAController::class, 'gerar'])->name('escala.ia.gerar');
 
 
 

@@ -122,6 +122,14 @@
   <symbol id="bi-list" viewBox="0 0 16 16">
     <path fill-rule="evenodd" d="M2.5 12a.5.5 0 0 1 .5-.5h10a.5.5 0 0 1 0 1H3a.5.5 0 0 1-.5-.5m0-4a.5.5 0 0 1 .5-.5h10a.5.5 0 0 1 0 1H3a.5.5 0 0 1-.5-.5m0-4a.5.5 0 0 1 .5-.5h10a.5.5 0 0 1 0 1H3a.5.5 0 0 1-.5-.5"/>
   </symbol>
+  <symbol id="calendar-event" viewBox="0 0 16 16">
+    <path d="M11 6.5a.5.5 0 0 1 .5-.5h1a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-.5.5h-1a.5.5 0 0 1-.5-.5z"/>
+    <path d="M3.5 0a.5.5 0 0 1 .5.5V1h8V.5a.5.5 0 0 1 1 0V1h1a2 2 0 0 1 2 2v11a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V3a2 2 0 0 1 2-2h1V.5a.5.5 0 0 1 .5-.5M1 4v10a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V4z"/>
+  </symbol>
+  <symbol id="person-x" viewBox="0 0 16 16">
+    <path d="M11 5a3 3 0 1 1-6 0 3 3 0 0 1 6 0M8 7a2 2 0 1 0 0-4 2 2 0 0 0 0 4m.256 7a4.5 4.5 0 0 1-.229-1.004H3c.001-.246.154-.986.832-1.664C4.484 10.68 5.711 10 8 10c.26 0 .507.009.74.025.226-.341.496-.65.804-.918C9.077 9.038 8.564 9 8 9c-5 0-6 3-6 4s1 1 1 1z"/>
+    <path d="M12.5 16a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7m-.646-4.854.646.647.646-.647a.5.5 0 0 1 .708.708l-.647.646.647.646a.5.5 0 0 1-.708.708l-.646-.647-.646.647a.5.5 0 0 1-.708-.708l.647-.646-.647-.646a.5.5 0 0 1 .708-.708"/>
+  </symbol>
 </svg>
 
 <main class="d-flex flex-nowrap" style="height: 100dvh;">
@@ -139,6 +147,31 @@
           Inicio
         </a>
       </li>
+      {{-- Seletor de Período Colapsável --}}
+      @if (isset($periodos) && $periodos->isNotEmpty())
+      <li>
+          <a class="nav-link text-white" data-bs-toggle="collapse" href="#periodoSelectorCollapse" role="button" aria-expanded="false" aria-controls="periodoSelectorCollapse">
+            <svg class="bi pe-none me-2" width="16" height="16"><use xlink:href="#calendar-event"/></svg>
+            Período
+          </a>
+          <div class="collapse" id="periodoSelectorCollapse">
+              <div class="list-group ps-3">
+                  <div class="list-group-item bg-dark border-0 py-2"> {{-- Item não clicável para abrigar o formulário --}}
+                      <form action="{{ route('periodo.selecionar') }}" method="POST" class="m-0">
+                          @csrf
+                          <select name="periodo_id" id="periodo_id" class="form-select form-select-sm" onchange="this.form.submit()" aria-label="Selecionar Período">
+                              @foreach ($periodos as $p)
+                                  <option value="{{ $p->id }}" {{ (session('periodo_id') ?? '') == $p->id ? 'selected' : '' }}>
+                                      {{ \Carbon\Carbon::parse($p->dataIni)->format('d/m/Y') }} - {{ \Carbon\Carbon::parse($p->dataFim)->format('d/m/Y') }}
+                                  </option>
+                              @endforeach
+                          </select>
+                      </form>
+                  </div>
+              </div>
+          </div>
+      </li>
+      @endif
       <li>
         <a class="nav-link text-white" data-bs-toggle="collapse" href="#collapseEscala" role="button" aria-expanded="false" aria-controls="collapseExample">
         <svg class="bi pe-none me-2" width="16" height="16"><use xlink:href="#table"/></svg>
@@ -163,18 +196,17 @@
               </a>
           </div>
           <div class="list-group ps-3">
-              <a class="list-group-item list-group-item-action text-white bg-dark border-0" href="{{route('escala.automatica')}}">
-              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-arrow-repeat me-2" viewBox="0 0 16 16">
-              <path d="M11.5 2A6.5 6.5 0 0 1 12 6.5V13h-2v-1.5a.5.5 0 0 1 1 0V13h2v-1.5a7 7 0 1 0-1.5-6zM6 11.5a5.5 5.5 0 0 0-2-6.5v-1h2v6.5a3.5 3.5 0 1 1 0 7 3.5 3.5 0 0 1 0-7z"/>
+              <a class="list-group-item list-group-item-action text-white bg-dark border-0" href="{{route('escala.ia')}}">
+              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-robot me-2" viewBox="0 0 16 16">
+                <path d="M6 12.5a.5.5 0 0 1 .5-.5h3a.5.5 0 0 1 0 1h-3a.5.5 0 0 1-.5-.5M3 8.062C3 6.76 4.235 5.765 5.53 5.886a26.6 26.6 0 0 0 4.94 0C11.765 5.765 13 6.76 13 8.062v1.157a.93.93 0 0 1-.765.935c-.845.147-2.34.346-4.235.346s-3.39-.2-4.235-.346A.93.93 0 0 1 3 9.219zm4.542-.827a.25.25 0 0 0-.217.068l-.92.9a25 25 0 0 1-1.871-.183.25.25 0 0 0-.068.495c.55.076 1.232.149 2.02.193a.25.25 0 0 0 .189-.071l.754-.736.847 1.71a.25.25 0 0 0 .404.062l.932-.97a25 25 0 0 0 1.922-.188.25.25 0 0 0-.068-.495c-.538.074-1.207.145-1.98.189a.25.25 0 0 0-.166.076l-.754.785-.842-1.7a.25.25 0 0 0-.182-.135Z"/>
+                <path d="M8.5 1.866a1 1 0 1 0-1 0V3h-2A4.5 4.5 0 0 0 1 7.5V8a1 1 0 0 0-1 1v2a1 1 0 0 0 1 1v1a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-1a1 1 0 0 0 1-1V9a1 1 0 0 0-1-1v-.5A4.5 4.5 0 0 0 10.5 3h-2zM14 7.5V13a1 1 0 0 1-1 1H3a1 1 0 0 1-1-1V7.5A3.5 3.5 0 0 1 5.5 4h5A3.5 3.5 0 0 1 14 7.5"/>
               </svg>
-              Escala Automática
+              Escala com IA
               </a>
           </div>
           <div class="list-group ps-3">
               <a class="list-group-item list-group-item-action text-white bg-dark border-0" href="{{route('escala.ausencia')}}">
-              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-calendar-x me-2" viewBox="0 0 16 16">
-              <path d="M6.146 1.428a.5.5 0 0 0-.708 0l-5 5a.5.5 0 0 0 .708.708L8 1.707l4.146 4.147a.5.5 0 0 0 .708-.708L10.293 1 6.146 1.428zm-3.5 8.5a.5.5 0 0 1 .5-.5h4a.5.5 0 0 1 0 1h-4a.5.5 0 0 1-.5-.5z"/>
-              </svg>
+              <svg class="bi pe-none me-2" width="16" height="16"><use xlink:href="#person-x"/></svg>
               Registrar Ausência
               </a>
           </div>
@@ -257,6 +289,8 @@
 <script type="text/javascript" src="https://unpkg.com/tabulator-tables@6.3.1/dist/js/tabulator.min.js"></script>
 <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.4.0/jspdf.umd.min.js"></script>
 <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.20/jspdf.plugin.autotable.min.js"></script>
+<!-- Chart.js -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <!-- Font Awesome -->
 <script src="https://kit.fontawesome.com/791479aa38.js" crossorigin="anonymous"></script>
 

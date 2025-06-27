@@ -15,6 +15,23 @@ use Carbon\Carbon;
 class EscalaController extends Controller
 {
     /**
+     * Busca o período ativo da sessão ou o mais recente cadastrado.
+     *
+     * @return \App\Models\Periodo|null
+     */
+    private function getPeriodoAtivo()
+    {
+        $periodoId = session('periodo_id');
+
+        if ($periodoId) {
+            return Periodo::find($periodoId);
+        }
+
+        // Fallback: se nenhum período estiver na sessão, pega o mais recente.
+        return Periodo::latest('id')->first();
+    }
+
+    /**
      * Display a listing of the resource.
      */
     public function index()
@@ -36,12 +53,8 @@ class EscalaController extends Controller
      */
     public function escalar()
     {
-        // Definir o ID do período manualmente
-        $periodoId = 2; // Altere este valor conforme necessário
-
-        // Buscar o período específico pelo ID
-        $periodo = Periodo::find($periodoId);
-
+        // Busca o período ativo (da sessão ou o mais recente)
+        $periodo = $this->getPeriodoAtivo();
         $escalaHeaders = [];
 
         Carbon::setLocale('pt_BR'); // Define a linguagem para português
@@ -74,7 +87,7 @@ class EscalaController extends Controller
         $turnos = Turno::orderBy('nome')->get();
     
         // Passar os dados para a view
-        return view('site.escalarfuncionario', compact('escalaHeaders', 'funcionarios', 'setores', 'turnos'));
+        return view('site.escalarfuncionario', compact('periodo', 'escalaHeaders', 'funcionarios', 'setores', 'turnos'));
     }
 
     /**
@@ -88,12 +101,13 @@ class EscalaController extends Controller
             'setor.*' => 'required|exists:setors,id',
             'turno.*' => 'required|exists:turnos,id',
             'status.*.*' => 'required|in:E,D,F,#',
+            'periodo_id' => 'required|exists:periodos,id', // Validar o período
         ]);
     
-        // Obter o ID do período (fixo ou enviado pelo formulário)
-        $periodoId = 2; // Ajuste conforme necessário
+        // Obter o ID do período do formulário
+        $periodoId = $validatedData['periodo_id'];
     
-        // Obter o período correspondente para cálculo das datas
+        // Obter o período correspondente
         $periodo = DB::table('periodos')->where('id', $periodoId)->first();
         if (!$periodo) {
             return redirect()->back()->withErrors(['error' => 'Período não encontrado.']);
@@ -158,9 +172,9 @@ class EscalaController extends Controller
      */
     public function listaEscala(Request $request)
     {
-        $periodoId = 2; // Ajuste conforme necessário
-        $periodo = Periodo::find($periodoId);
-    
+        // Busca o período ativo (da sessão ou o mais recente)
+        $periodo = $this->getPeriodoAtivo();
+
         // Captura os filtros do request
         $funcionarioId = $request->input('funcionario');
         $setorId = $request->input('setor');
@@ -170,11 +184,11 @@ class EscalaController extends Controller
     
         Carbon::setLocale('pt_BR');
 
-        // Definir datas do período
-        $dataInicio = Carbon::parse($periodo->dataIni);
-        $dataFim = Carbon::parse($periodo->dataFim);        
-    
         if ($periodo) {
+            // Definir datas do período
+            $dataInicio = Carbon::parse($periodo->dataIni);
+            $dataFim = Carbon::parse($periodo->dataFim);
+
             for ($data = $dataInicio->copy(); $data->lte($dataFim); $data->addDay()) {
                 $escalaHeaders[] = [
                     'day' => $data->format('Y-m-d'),
@@ -182,6 +196,12 @@ class EscalaController extends Controller
                     'diaDoMes' => $data->day,
                 ];
             }
+        } else {
+            // Tratar o caso de não haver nenhum período cadastrado
+            return view('site.escala', [
+                'periodo' => null, 'escalaHeaders' => null, 'escalas' => collect(), 'bloqueios' => [],
+                'funcionarios' => Funcionario::orderBy('nome')->get(), 'setores' => Setor::orderBy('nome')->get(), 'turnos' => Turno::orderBy('nome')->get()
+            ])->withErrors(['error' => 'Nenhum período de escala cadastrado. Por favor, cadastre um antes de continuar.']);
         }
     
         if (empty($escalaHeaders)) {
@@ -190,12 +210,12 @@ class EscalaController extends Controller
     
         // 🔹 Obtem todas as escalas (SEM FILTRO) para o bloqueio
         $todasEscalas = Escala::with(['setor', 'turno', 'funcionario'])
-        ->whereBetween('dia', [$dataInicio, $dataFim])
+        ->whereBetween('dia', [$periodo->dataIni, $periodo->dataFim])
         ->get();
     
         // 🔹 Query com filtros aplicados para exibição
         $query = Escala::with(['setor', 'turno', 'funcionario'])
-            ->whereBetween('dia', [$dataInicio, $dataFim]);
+            ->whereBetween('dia', [$periodo->dataIni, $periodo->dataFim]);
     
         if (!empty($funcionarioId)) {
             $query->where('id_funcionario', $funcionarioId);
@@ -233,7 +253,7 @@ class EscalaController extends Controller
         $setores = Setor::orderBy('nome')->get();
         $turnos = Turno::orderBy('nome')->get();
     
-        return view('site.escala', compact('escalaHeaders', 'escalas', 'bloqueios', 'funcionarios', 'setores', 'turnos'));
+        return view('site.escala', compact('periodo', 'escalaHeaders', 'escalas', 'bloqueios', 'funcionarios', 'setores', 'turnos'));
     }
 
     /**
@@ -249,12 +269,13 @@ class EscalaController extends Controller
             'setor.*' => 'required|exists:setors,id',
             'turno.*' => 'required|exists:turnos,id',
             'status.*.*' => 'required|in:E,D,F,#,A',
+            'periodo_id' => 'required|exists:periodos,id', // Validar o período
         ]);
     
-        // Obter o ID do período (fixo ou enviado pelo formulário)
-        $periodoId = 2; // Ajuste conforme necessário
+        // Obter o ID do período do formulário
+        $periodoId = $validatedData['periodo_id'];
     
-        // Obter o período correspondente para cálculo das datas
+        // Obter o período correspondente
         $periodo = DB::table('periodos')->where('id', $periodoId)->first();
         if (!$periodo) {
             return redirect()->back()->withErrors(['error' => 'Período não encontrado.']);
@@ -336,117 +357,6 @@ class EscalaController extends Controller
     
         return redirect()->back()->with('success', 'Escala atualizada com sucesso!');
     }    
-
-    /**
-     * Página de escala automática.
-     */
-    public function escalaautomatica()
-    {
-        $funcionarios = Funcionario::orderBy('nome')->get();
-
-        return view('site.escalaautomatica', compact('funcionarios'));
-    }
-
-    /**
-     *  Gera a escala automática.
-     */
-    public function gerarEscalaAutomatica($funcionarioId = null)
-    {
-        $periodoId = 2; // Ajuste conforme necessário
-        $periodo = Periodo::find($periodoId);
-        if (!$periodo) {
-            return response()->json(['erro' => 'Nenhum período cadastrado'], 400);
-        }
-
-        $dataInicio = Carbon::parse($periodo->dataIni);
-        $dataFim = Carbon::parse($periodo->dataFim);
-
-        // Obtém os setores e turnos do funcionário
-        $setores = DB::table('funSetor')->where('id_funcionario', $funcionarioId)->pluck('id_setor')->toArray();
-        $turnos = DB::table('funTurno')->where('id_funcionario', $funcionarioId)->pluck('id_turno')->toArray();
-
-        // Obtém os dias de folga cadastrados na tabela funFolga
-        $diasFolga = DB::table('funFolga')->where('id_funcionario', $funcionarioId)->pluck('folga')->toArray();
-        
-        // Array para converter os dias da semana para os nomes armazenados na tabela funFolga
-        $diasSemana = [
-            'Sunday'    => 'dom',
-            'Monday'    => 'seg',
-            'Tuesday'   => 'ter',
-            'Wednesday' => 'qua',
-            'Thursday'  => 'qui',
-            'Friday'    => 'sex',
-            'Saturday'  => 'sab',
-        ];
-
-        // Percorre os dias do período
-        for ($data = clone $dataInicio; $data->lte($dataFim); $data->addDay()) {
-            $diaSemana = $data->format('l'); // Nome do dia em inglês (Sunday, Monday, ...)
-            $diaEscala = $diasSemana[$diaSemana] ?? null;
-
-            if (in_array($diaEscala, $diasFolga)) {
-                // Se for um dia de folga, registra como descanso
-                Escala::updateOrCreate(
-                    [
-                        'dia'            => $data->format('Y-m-d'),
-                        'id_funcionario' => $funcionarioId,
-                    ],
-                    [
-                        'id_setor' => $setor,
-                        'id_turno' => $turno,
-                        'status'   => 'D', // Descanso
-                    ]
-                );
-            } else {
-                // Define setor e turno aleatórios para o funcionário
-                $setor = $setores[array_rand($setores)];
-                $turno = $turnos[array_rand($turnos)];
-
-                // Salva a escala no banco de dados
-                Escala::updateOrCreate(
-                    [
-                        'dia'            => $data->format('Y-m-d'),
-                        'id_funcionario' => $funcionarioId,
-                    ],
-                    [
-                        'id_setor' => $setor,
-                        'id_turno' => $turno,
-                        'status'   => 'E', // Escalado
-                    ]
-                );
-            }
-        }
-    }
-    
-    /**
-     *  Gera a escala automática.
-     */
-    public function gerarEscala(Request $request)
-    {
-        // Obtém os funcionários selecionados no formulário
-        $funcionariosSelecionados = $request->input('escalados', []);
-
-        if (empty($funcionariosSelecionados)) {
-            return back()->withErrors(['msg' => 'Selecione pelo menos um funcionário para gerar a escala.']);
-        }
-
-        // Obtém o período atual (último cadastrado)
-        $periodo = Periodo::latest('id')->first();
-        
-        if (!$periodo) {
-            return back()->withErrors(['msg' => 'Nenhum período encontrado.']);
-        }
-
-        $dataInicio = Carbon::parse($periodo->dataIni);
-        $dataFim = Carbon::parse($periodo->dataFim);
-
-        // Gera a escala para cada funcionário selecionado
-        foreach ($funcionariosSelecionados as $funcionarioId) {
-            $this->gerarEscalaAutomatica($funcionarioId, $dataInicio, $dataFim);
-        }
-
-        return back()->with('success', 'Escala gerada com sucesso!');
-    }
 
     /**
      * Página para registrar ausencia do funcionário.

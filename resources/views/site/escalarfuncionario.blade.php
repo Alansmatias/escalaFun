@@ -16,6 +16,11 @@
 
 <form class="row g-3 overflow-auto" method="POST" action="{{ route('escalar.salvar') }}">
     @csrf
+    {{-- Adiciona o ID do período como um campo oculto para ser enviado com o formulário --}}
+    @if($periodo)
+        <input type="hidden" name="periodo_id" value="{{ $periodo->id }}">
+    @endif
+
     <table class="table">
         <!-- Código anterior -->
         <thead>
