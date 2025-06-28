@@ -84,10 +84,8 @@
                 <th scope="col">Turno</th>
                 @if($escalaHeaders)
                     @foreach($escalaHeaders as $header)
-                        <th scope="col" class="text-center">
-                            @if($header['countE'] > 0)
-                                <span class="badge bg-success mb-1">{{ $header['countE'] }}</span><br>
-                            @endif
+                        <th scope="col" class="text-center" data-header-day="{{ $header['day'] }}">
+                            <span class="badge bg-success mb-1 d-none daily-count">0</span><br>
                             {{ $header['dayName'] }}<br>
                             {{ $header['diaDoMes'] }}
                         </th>
@@ -170,6 +168,37 @@
 </form>
 
 <script>
+    // Função para atualizar a contagem de um dia específico
+    function updateCountForDay(day) {
+        const header = document.querySelector(`th[data-header-day="${day}"]`);
+        if (!header) return;
+
+        const countSpan = header.querySelector('.daily-count');
+        const buttonsForDay = document.querySelectorAll(`tbody tr button[data-dia="${day}"]`);
+        let countE = 0;
+
+        buttonsForDay.forEach(btn => {
+            if (btn.getAttribute('data-status') === 'E') {
+                countE++;
+            }
+        });
+
+        countSpan.textContent = countE;
+        if (countE > 0) {
+            countSpan.classList.remove('d-none');
+        } else {
+            countSpan.classList.add('d-none');
+        }
+    }
+
+    // Atualiza todos os contadores ao carregar a página
+    document.addEventListener('DOMContentLoaded', function() {
+        const headers = document.querySelectorAll('th[data-header-day]');
+        headers.forEach(header => {
+            updateCountForDay(header.dataset.headerDay);
+        });
+    });
+
     function toggleStatus(button) {
         const statuses = ["E", "D", "F", "#"];
         const classes = {
@@ -199,6 +228,9 @@
         button.setAttribute("data-status", nextStatus);
         button.nextElementSibling.value = nextStatus;
         button.className = `btn ${classes[nextStatus]} statusButton`;
+
+        // Atualiza a contagem para o dia que foi alterado
+        updateCountForDay(button.dataset.dia);
     }
 </script>
 

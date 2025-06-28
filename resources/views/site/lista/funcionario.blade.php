@@ -42,7 +42,12 @@
         <td>{{ $funcionario->telefone }}</td>
         <td>{{ $funcionario->contrato }}</td>
         <td>
-          <a class="btn btn-primary" href="{{ route('funcionario.edit', $funcionario->id) }}" role="button">Editar</a>
+          <a class="btn btn-primary btn-sm" href="{{ route('funcionario.edit', $funcionario->id) }}" role="button">Editar</a>
+          <form action="{{ route('funcionario.destroy', $funcionario->id) }}" method="POST" style="display:inline-block;" onsubmit="return confirm('Tem certeza que deseja excluir este funcionário? Esta ação não pode ser desfeita.');">
+              @csrf
+              @method('DELETE')
+              <button type="submit" class="btn btn-danger btn-sm">Excluir</button>
+          </form>
         </td>
       </tr>
     @endforeach

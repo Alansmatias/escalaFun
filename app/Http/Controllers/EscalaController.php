@@ -189,20 +189,12 @@ class EscalaController extends Controller
             $dataInicio = Carbon::parse($periodo->dataIni);
             $dataFim = Carbon::parse($periodo->dataFim);
 
-            // Contagem de funcionários com status 'E' por dia
-            $contagemDiariaE = Escala::whereBetween('dia', [$dataInicio, $dataFim])
-                ->where('status', 'E')
-                ->select('dia', DB::raw('count(*) as total'))
-                ->groupBy('dia')
-                ->pluck('total', 'dia');
-
             for ($data = $dataInicio->copy(); $data->lte($dataFim); $data->addDay()) {
                 $currentDayStr = $data->format('Y-m-d');
                 $escalaHeaders[] = [
                     'day' => $currentDayStr,
                     'dayName' => $data->translatedFormat('D'),
                     'diaDoMes' => $data->day,
-                    'countE' => $contagemDiariaE->get($currentDayStr, 0),
                 ];
             }
         } else {

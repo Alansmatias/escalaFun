@@ -208,9 +208,33 @@ class FuncionarioController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(Funcionario $funcionario)
+    public function destroy($id)
     {
-        //
+        $funcionario = Funcionario::findOrFail($id);
+
+        // Verifica se o funcionário possui escalas registradas
+        $hasEscalas = DB::table('escalas')->where('id_funcionario', $id)->exists();
+
+        if ($hasEscalas) {
+            return redirect()->route('home.lista.funcionario')->withErrors(['error' => 'Não é possível excluir o funcionário, pois ele possui escalas registradas. Remova-o das escalas primeiro.']);
+        }
+
+        DB::beginTransaction();
+        try {
+            // Remove os registros das tabelas de relacionamento
+            DB::table('funfolga')->where('id_funcionario', $id)->delete();
+            DB::table('funsetor')->where('id_funcionario', $id)->delete();
+            DB::table('funturno')->where('id_funcionario', $id)->delete();
+
+            // Exclui o funcionário
+            $funcionario->delete();
+
+            DB::commit();
+
+            return redirect()->route('home.lista.funcionario')->with('success', 'Funcionário excluído com sucesso!');
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return redirect()->route('home.lista.funcionario')->withErrors(['error' => 'Ocorreu um erro ao tentar excluir o funcionário.']);
+        }
     }
 }
-
