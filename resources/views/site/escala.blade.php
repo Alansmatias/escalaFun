@@ -69,7 +69,12 @@
         <input type="hidden" name="periodo_id" value="{{ $periodo->id }}">
     @endif
 
-    <table class="table row g-3 overflow-auto">
+    <div class="col-12 mt-5">
+        <button class="btn btn-primary mt-2" type="submit"><i class="fa-solid fa-check"></i> Atualizar Escala</button>
+        <a href="{{route('escalarfun')}}" class="btn btn-primary mt-2"><i class="fa-solid fa-plus"></i> Adicionar Funcionário</a>
+    </div>
+
+    <table class="table row overflow-auto">
         <!-- Corpo da tabela -->
         <tbody>
             <!-- Cabeçalho da tabela -->
@@ -79,7 +84,13 @@
                 <th scope="col">Turno</th>
                 @if($escalaHeaders)
                     @foreach($escalaHeaders as $header)
-                        <th scope="col">{{ $header['dayName'] }}<br>{{ $header['diaDoMes'] }}</th>
+                        <th scope="col" class="text-center">
+                            @if($header['countE'] > 0)
+                                <span class="badge bg-success mb-1">{{ $header['countE'] }}</span><br>
+                            @endif
+                            {{ $header['dayName'] }}<br>
+                            {{ $header['diaDoMes'] }}
+                        </th>
                     @endforeach
                 @else
                     <th scope="col" colspan="31">Nenhum período definido</th>
@@ -156,11 +167,6 @@
         @endforeach
         </tbody>
     </table>
-
-    <div class="col-12 mb-3">
-        <button class="btn btn-primary mt-2" type="submit"><i class="fa-solid fa-check"></i> Atualizar Escala</button>
-        <a href="{{route('escalarfun')}}" class="btn btn-primary mt-2"><i class="fa-solid fa-plus"></i> Adicionar Funcionário</a>
-    </div>
 </form>
 
 <script>
